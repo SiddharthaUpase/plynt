@@ -1,0 +1,12 @@
+{
+  "buildCommand": "flutter/bin/flutter build web --release",
+  "outputDirectory": "build/web",
+  "framework": "flutter",
+  "routes": [
+    { "handle": "filesystem" },
+    { "src": "/(.*)", "dest": "/" }
+  ],
+  "env": {
+    "OUTPUT_STANDALONE": "true"
+  }
+} 
