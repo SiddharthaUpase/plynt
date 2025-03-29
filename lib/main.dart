@@ -28,44 +28,9 @@ const String openaiApiKey = String.fromEnvironment(
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Use Flutter's built-in kReleaseMode to detect development mode
-  final bool isDevelopment = !kReleaseMode;
-
   String apiUrl = supabaseUrl;
   String apiKey = supabaseAnonKey;
   String apiOpenAIKey = openaiApiKey;
-
-  // Only load environment variables from .env files in development mode
-  if (isDevelopment) {
-    print(
-      "Running in development mode - loading environment variables from .env files",
-    );
-    try {
-      await dotenv.load(fileName: ".env");
-    } catch (e) {
-      print("Failed to load .env file: $e");
-      // Try to load the fallback file if the main .env fails
-      try {
-        await dotenv.load(fileName: ".env.default");
-      } catch (e) {
-        print("Failed to load .env.default file: $e");
-      }
-    }
-
-    // In development mode, use .env values if available
-    apiUrl = dotenv.env['SUPABASE_URL'] ?? supabaseUrl;
-    apiKey = dotenv.env['SUPABASE_ANON_KEY'] ?? supabaseAnonKey;
-    apiOpenAIKey = dotenv.env['OPENAI_API_KEY'] ?? openaiApiKey;
-
-    // Debug prints for development mode
-    print('Development mode - API URL: $apiUrl');
-    print('Development mode - API KEY: $apiKey');
-    print('Development mode - OPENAI API KEY: $apiOpenAIKey');
-  } else {
-    print(
-      "Running in production mode - using dart-define environment variables",
-    );
-  }
 
   // Initialize Supabase
   await Supabase.initialize(url: apiUrl, anonKey: apiKey);
