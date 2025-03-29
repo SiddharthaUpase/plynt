@@ -25,7 +25,7 @@ class ChatMessage {
 }
 
 class ChatController extends GetxController {
-  final OpenAIService openAIService = OpenAIService();
+  final OpenAIService openAIService;
   final Mem0Service mem0Service = Mem0Service();
   final AuthController authController = Get.find<AuthController>();
 
@@ -40,6 +40,9 @@ class ChatController extends GetxController {
 
   // Number of previous messages to include as context
   final int contextWindowSize = 6;
+
+  ChatController({String apiKey = ''})
+    : openAIService = OpenAIService(apiKey: apiKey);
 
   @override
   void onInit() {

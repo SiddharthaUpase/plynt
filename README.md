@@ -96,3 +96,46 @@ GetX is used for:
 - Customize the UI by updating the neomorphic styling
 - Add document search functionality
 - Implement document preview for different file types
+
+# Plynt
+
+## Environment Variables for Deployment
+
+This project uses environment variables for configuration. When deploying to Vercel:
+
+1. Set up the following environment variables in your Vercel project settings:
+   - `OPENAI_API_KEY`: Your OpenAI API key
+   - `SUPABASE_URL`: Your Supabase URL
+   - `SUPABASE_ANON_KEY`: Your Supabase anonymous key
+
+2. The `vercel.json` file is configured to automatically use these environment variables during the build process.
+
+## Local Development
+
+For local development:
+
+1. Create a `.env` file in the project root with the following variables:
+   ```
+   OPENAI_API_KEY=your_api_key_here
+   SUPABASE_URL=your_supabase_url
+   SUPABASE_ANON_KEY=your_supabase_anon_key
+   ```
+
+2. Run the app using:
+   ```bash
+   flutter run -d chrome
+   ```
+
+## Using dart-define for Different Environments
+
+You can also use `--dart-define` to inject environment variables at build time:
+
+```bash
+flutter run -d chrome --dart-define=OPENAI_API_KEY=your_api_key_here
+```
+
+For production builds:
+
+```bash
+flutter build web --release --dart-define=OPENAI_API_KEY=your_api_key_here
+```

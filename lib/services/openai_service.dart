@@ -7,7 +7,11 @@ class OpenAIService {
 
   static const String apiUrl = 'https://api.openai.com/v1/chat/completions';
 
-  var apiKey = dotenv.env['OPENAI_API_KEY'] ?? '';
+  final String apiKey;
+
+  OpenAIService({String apiKey = ''})
+    : this.apiKey =
+          apiKey.isNotEmpty ? apiKey : (dotenv.env['OPENAI_API_KEY'] ?? '');
 
   // Function to get a response for chat interaction
   Future<String> getChatResponse(String userMessage) async {
