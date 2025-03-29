@@ -46,6 +46,11 @@ void main() async {
   // Store the OpenAI API key in a global variable or pass it to your controller
   final String apiOpenAIKey = dotenv.env['OPENAI_API_KEY'] ?? openaiApiKey;
 
+  //print the api keys
+  print('API URL: $apiUrl');
+  print('API KEY: $apiKey');
+  print('OPENAI API KEY: $apiOpenAIKey');
+
   // Initialize Supabase
   await Supabase.initialize(url: apiUrl, anonKey: apiKey);
 
