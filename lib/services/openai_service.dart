@@ -1,37 +1,13 @@
 import 'dart:convert';
-import 'dart:js' as js;
 import 'package:http/http.dart' as http;
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class OpenAIService {
-  // Get API key from environment variables with web support
-  static String get apiKey {
-    // For web deployments, try to get from JS window object first
-    if (kIsWeb) {
-      try {
-        final envObj = js.context['flutterEnvironment'];
-        if (envObj != null) {
-          final key = envObj['OPENAI_API_KEY'];
-          if (key != null &&
-              key is String &&
-              key.isNotEmpty &&
-              key != "%OPENAI_API_KEY%") {
-            print('Using API key from window.flutterEnvironment');
-            return key;
-          }
-        }
-      } catch (e) {
-        print('Error accessing JS environment: $e');
-      }
-    }
-
-    // Fallback to dotenv
-    final dotenvKey = dotenv.env['OPENAI_API_KEY'] ?? '';
-    return dotenvKey;
-  }
+  // Get API key from environment variables - check platform environment variables first
 
   static const String apiUrl = 'https://api.openai.com/v1/chat/completions';
+
+  var apiKey = dotenv.env['OPENAI_API_KEY'] ?? '';
 
   // Function to get a response for chat interaction
   Future<String> getChatResponse(String userMessage) async {
@@ -70,6 +46,8 @@ class OpenAIService {
             data['choices'][0]['message']['content'].toString().trim();
         return aiResponse;
       } else {
+        //print api key
+        print('API key: $apiKey');
         print('OpenAI API error: ${response.body}');
         return "I'm sorry, I encountered an error. Please try again later.";
       }
@@ -126,6 +104,8 @@ class OpenAIService {
           return "query";
         }
       } else {
+        //print api key
+        print('API key: $apiKey');
         print('OpenAI API error: ${response.body}');
         return "query"; // Default to query on error
       }
