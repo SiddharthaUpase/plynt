@@ -13,8 +13,13 @@ import 'views/splash_view.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Load environment variables
-  await dotenv.load(fileName: ".env");
+  // Load environment variables - try .env first, fallback to .env.default
+  try {
+    await dotenv.load(fileName: ".env");
+  } catch (e) {
+    await dotenv.load(fileName: ".env.default");
+    print('Using default environment configuration');
+  }
 
   // Initialize Supabase
   // Replace with your Supabase URL and anon key

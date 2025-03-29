@@ -3,8 +3,18 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class OpenAIService {
-  // Get API key from environment variables
-  static String get apiKey => dotenv.env['OPENAI_API_KEY'] ?? '';
+  // Get API key from environment variables - check platform environment variables first
+  static String get apiKey {
+    // For web deployments, check if a JS-provided environment variable exists
+    // This will allow Vercel or other deployment platforms to inject the key
+    final platformKey = const String.fromEnvironment('OPENAI_API_KEY');
+    if (platformKey.isNotEmpty) {
+      return platformKey;
+    }
+    // Fallback to dotenv
+    return dotenv.env['OPENAI_API_KEY'] ?? '';
+  }
+
   static const String apiUrl = 'https://api.openai.com/v1/chat/completions';
 
   // Function to get a response for chat interaction
