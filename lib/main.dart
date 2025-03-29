@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter/foundation.dart';
 import 'controllers/auth_controller.dart';
 import 'controllers/document_controller.dart';
 import 'controllers/chat_controller.dart';
@@ -27,29 +28,44 @@ const String openaiApiKey = String.fromEnvironment(
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // // Try to load environment variables from .env files
-  // try {
-  //   await dotenv.load(fileName: ".env");
-  // } catch (e) {
-  //   try {
-  //     await dotenv.load(fileName: ".env.default");
-  //     print('Using default environment configuration');
-  //   } catch (e) {
-  //     print('Could not load .env files, using dart-define values');
-  //   }
-  // }
+  // Use Flutter's built-in kReleaseMode to detect development mode
+  final bool isDevelopment = !kReleaseMode;
 
-  // Get API keys from dotenv or use dart-define defaults
-  final String apiUrl = dotenv.env['SUPABASE_URL'] ?? supabaseUrl;
-  final String apiKey = dotenv.env['SUPABASE_ANON_KEY'] ?? supabaseAnonKey;
+  String apiUrl = supabaseUrl;
+  String apiKey = supabaseAnonKey;
+  String apiOpenAIKey = openaiApiKey;
 
-  // Store the OpenAI API key in a global variable or pass it to your controller
-  final String apiOpenAIKey = dotenv.env['OPENAI_API_KEY'] ?? openaiApiKey;
+  // Only load environment variables from .env files in development mode
+  if (isDevelopment) {
+    print(
+      "Running in development mode - loading environment variables from .env files",
+    );
+    try {
+      await dotenv.load(fileName: ".env");
+    } catch (e) {
+      print("Failed to load .env file: $e");
+      // Try to load the fallback file if the main .env fails
+      try {
+        await dotenv.load(fileName: ".env.default");
+      } catch (e) {
+        print("Failed to load .env.default file: $e");
+      }
+    }
 
-  //print the api keys
-  print('API URL: $apiUrl');
-  print('API KEY: $apiKey');
-  print('OPENAI API KEY: $apiOpenAIKey');
+    // In development mode, use .env values if available
+    apiUrl = dotenv.env['SUPABASE_URL'] ?? supabaseUrl;
+    apiKey = dotenv.env['SUPABASE_ANON_KEY'] ?? supabaseAnonKey;
+    apiOpenAIKey = dotenv.env['OPENAI_API_KEY'] ?? openaiApiKey;
+
+    // Debug prints for development mode
+    print('Development mode - API URL: $apiUrl');
+    print('Development mode - API KEY: $apiKey');
+    print('Development mode - OPENAI API KEY: $apiOpenAIKey');
+  } else {
+    print(
+      "Running in production mode - using dart-define environment variables",
+    );
+  }
 
   // Initialize Supabase
   await Supabase.initialize(url: apiUrl, anonKey: apiKey);

@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class OpenAIService {
   // Get API key from environment variables - check platform environment variables first
@@ -9,9 +8,7 @@ class OpenAIService {
 
   final String apiKey;
 
-  OpenAIService({String apiKey = ''})
-    : this.apiKey =
-          apiKey.isNotEmpty ? apiKey : (dotenv.env['OPENAI_API_KEY'] ?? '');
+  OpenAIService({String apiKey = ''}) : this.apiKey = apiKey;
 
   // Function to get a response for chat interaction
   Future<String> getChatResponse(String userMessage) async {
