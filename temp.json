@@ -1,0 +1,746 @@
+{
+    "count": 74,
+    "next": null,
+    "previous": null,
+    "results": [{
+        "id": "adeb151b-32fd-4b49-8782-3e401cf333b5",
+        "memory": "Offer of employment extended to Siddhartha Upase by DAPI INC",
+        "user_id": "s1dupase34@gmail.com",
+        "metadata": null,
+        "categories": ["professional_details"],
+        "immutable": false,
+        "created_at": "2025-03-27T00:46:38.580962-07:00",
+        "updated_at": "2025-03-27T00:46:38.580974-07:00",
+        "expiration_date": null
+    }, {
+        "id": "2c26465f-d764-4afd-8a1a-70cea251fdad",
+        "memory": "Job location is San Francisco",
+        "user_id": "s1dupase34@gmail.com",
+        "metadata": null,
+        "categories": ["professional_details"],
+        "immutable": false,
+        "created_at": "2025-03-27T00:42:52.502639-07:00",
+        "updated_at": "2025-03-27T00:42:52.502651-07:00",
+        "expiration_date": null
+    }, {
+        "id": "f98299cb-2a1f-498c-9a1f-92052f602d64",
+        "memory": "Position offered is Software Engineer at DAPI INC",
+        "user_id": "s1dupase34@gmail.com",
+        "metadata": null,
+        "categories": ["professional_details"],
+        "immutable": false,
+        "created_at": "2025-03-27T00:42:49.270613-07:00",
+        "updated_at": "2025-03-27T00:42:49.270622-07:00",
+        "expiration_date": null
+    }, {
+        "id": "73695baf-d0d4-4d67-84a4-535a782d7ab0",
+        "memory": "Designated school official to contact is Moeko Mikami",
+        "user_id": "s1dupase34@gmail.com",
+        "metadata": null,
+        "categories": ["personal_details"],
+        "immutable": false,
+        "created_at": "2025-03-27T00:41:43.659042-07:00",
+        "updated_at": "2025-03-27T00:41:43.659054-07:00",
+        "expiration_date": null
+    }, {
+        "id": "39e4b43c-bf8b-428e-a1f1-1730a1cb4fb4",
+        "memory": "Earliest admission date was December 10, 2022",
+        "user_id": "s1dupase34@gmail.com",
+        "metadata": null,
+        "categories": ["misc"],
+        "immutable": false,
+        "created_at": "2025-03-27T00:41:32.519468-07:00",
+        "updated_at": "2025-03-27T00:41:32.519480-07:00",
+        "expiration_date": null
+    }, {
+        "id": "3f77b175-45be-4cd0-836c-e38e24f7c6a3",
+        "memory": "Classes will end on December 14, 2024",
+        "user_id": "s1dupase34@gmail.com",
+        "metadata": null,
+        "categories": ["misc"],
+        "immutable": false,
+        "created_at": "2025-03-27T00:41:04.151586-07:00",
+        "updated_at": "2025-03-27T00:41:04.151597-07:00",
+        "expiration_date": null
+    }, {
+        "id": "5659b477-4aa1-4eb6-aa09-6d036bd81fb8",
+        "memory": "Classes started on January 9, 2023",
+        "user_id": "s1dupase34@gmail.com",
+        "metadata": null,
+        "categories": ["milestones"],
+        "immutable": false,
+        "created_at": "2025-03-27T00:41:04.099140-07:00",
+        "updated_at": "2025-03-27T00:41:04.099156-07:00",
+        "expiration_date": null
+    }, {
+        "id": "8f657c97-85e4-49f6-b574-2164f11f24f4",
+        "memory": "Program of study is a Master's in Computer Science",
+        "user_id": "s1dupase34@gmail.com",
+        "metadata": null,
+        "categories": ["professional_details", "technology"],
+        "immutable": false,
+        "created_at": "2025-03-27T00:40:57.730438-07:00",
+        "updated_at": "2025-03-27T00:40:57.730451-07:00",
+        "expiration_date": null
+    }, {
+        "id": "c8f9a8d0-2683-4fa5-8569-6c09cd53af60",
+        "memory": "The student is attending the Illinois Institute of Technology",
+        "user_id": "s1dupase34@gmail.com",
+        "metadata": null,
+        "categories": ["professional_details"],
+        "immutable": false,
+        "created_at": "2025-03-27T00:40:54.838786-07:00",
+        "updated_at": "2025-03-27T00:40:54.838798-07:00",
+        "expiration_date": null
+    }, {
+        "id": "3c82978c-8ed6-4771-8305-42e01c1b4f5b",
+        "memory": "Holds Indian citizenship",
+        "user_id": "s1dupase34@gmail.com",
+        "metadata": null,
+        "categories": ["personal_details"],
+        "immutable": false,
+        "created_at": "2025-03-27T00:40:39.673941-07:00",
+        "updated_at": "2025-03-27T00:40:39.673959-07:00",
+        "expiration_date": null
+    }, {
+        "id": "a452eae1-a350-4d4d-ad1e-e67d5030cd40",
+        "memory": "The student is from India",
+        "user_id": "s1dupase34@gmail.com",
+        "metadata": null,
+        "categories": ["misc"],
+        "immutable": false,
+        "created_at": "2025-03-27T00:40:39.642032-07:00",
+        "updated_at": "2025-03-27T00:40:39.642043-07:00",
+        "expiration_date": null
+    }, {
+        "id": "7b0ee339-3c8d-4cd9-b131-148e716c0b13",
+        "memory": "Visa type is F1, which is typically for students",
+        "user_id": "s1dupase34@gmail.com",
+        "metadata": null,
+        "categories": ["professional_details", "misc"],
+        "immutable": false,
+        "created_at": "2025-03-27T00:39:15.394806-07:00",
+        "updated_at": "2025-03-27T00:39:15.394818-07:00",
+        "expiration_date": null
+    }, {
+        "id": "90216f91-74cc-4979-9683-d7423ac54fd9",
+        "memory": "Holds a United States visa",
+        "user_id": "s1dupase34@gmail.com",
+        "metadata": null,
+        "categories": ["personal_details"],
+        "immutable": false,
+        "created_at": "2025-03-27T00:39:10.353176-07:00",
+        "updated_at": "2025-03-27T00:39:10.353188-07:00",
+        "expiration_date": null
+    }, {
+        "id": "af66b305-2b18-4359-aa5f-9dc05dba09d2",
+        "memory": "The University Registrar is Khalilah Guyton-Hamlin",
+        "user_id": "s1dupase34@gmail.com",
+        "metadata": null,
+        "categories": ["personal_details", "professional_details"],
+        "immutable": false,
+        "created_at": "2025-03-27T00:25:47.449927-07:00",
+        "updated_at": "2025-03-27T00:25:47.449957-07:00",
+        "expiration_date": null
+    }, {
+        "id": "c083dcb2-b771-437e-8d3f-b73017ef11be",
+        "memory": "For verification, the document can be checked online at the provided Parchment link",
+        "user_id": "s1dupase34@gmail.com",
+        "metadata": null,
+        "categories": ["misc"],
+        "immutable": false,
+        "created_at": "2025-03-27T00:25:47.400297-07:00",
+        "updated_at": "2025-03-27T00:25:47.400305-07:00",
+        "expiration_date": null
+    }, {
+        "id": "db1c6c2d-3475-4396-9774-607d20db7ff0",
+        "memory": "The document includes signatures from the Chairman of the Board of Trustees, the Provost, the President, and the Dean",
+        "user_id": "s1dupase34@gmail.com",
+        "metadata": null,
+        "categories": ["professional_details"],
+        "immutable": false,
+        "created_at": "2025-03-27T00:25:47.363411-07:00",
+        "updated_at": "2025-03-27T00:25:47.363419-07:00",
+        "expiration_date": null
+    }, {
+        "id": "248cd559-9d8d-4a97-9f02-38b62203da77",
+        "memory": "The digital signature embedded in the document can be verified using Adobe Acrobat",
+        "user_id": "s1dupase34@gmail.com",
+        "metadata": null,
+        "categories": ["technology"],
+        "immutable": false,
+        "created_at": "2025-03-27T00:25:47.317818-07:00",
+        "updated_at": "2025-03-27T00:25:47.317827-07:00",
+        "expiration_date": null
+    }, {
+        "id": "1e736e4b-3e00-42a0-af70-fa950594758f",
+        "memory": "The document is an official digital credential from the Illinois Institute of Technology",
+        "user_id": "s1dupase34@gmail.com",
+        "metadata": null,
+        "categories": ["professional_details"],
+        "immutable": false,
+        "created_at": "2025-03-27T00:25:47.264704-07:00",
+        "updated_at": "2025-03-27T00:25:47.264714-07:00",
+        "expiration_date": null
+    }, {
+        "id": "916e1c29-833a-4581-bc4b-c428fb5180ee",
+        "memory": "The degree was awarded on December 14, 2024",
+        "user_id": "s1dupase34@gmail.com",
+        "metadata": null,
+        "categories": ["milestones"],
+        "immutable": false,
+        "created_at": "2025-03-27T00:25:47.185407-07:00",
+        "updated_at": "2025-03-27T00:25:47.185416-07:00",
+        "expiration_date": null
+    }, {
+        "id": "8ffe617c-8a90-457d-aebb-5799768f3a40",
+        "memory": "This degree was awarded by the Illinois Institute of Technology",
+        "user_id": "s1dupase34@gmail.com",
+        "metadata": null,
+        "categories": ["professional_details"],
+        "immutable": false,
+        "created_at": "2025-03-27T00:25:47.152715-07:00",
+        "updated_at": "2025-03-27T00:25:47.152725-07:00",
+        "expiration_date": null
+    }, {
+        "id": "c46dd3e4-4795-4b0e-bf2f-23041743b6bd",
+        "memory": "The degree of Master of Computer Science has been conferred upon Siddhartha Sureshkumar Upase",
+        "user_id": "s1dupase34@gmail.com",
+        "metadata": null,
+        "categories": ["personal_details", "professional_details"],
+        "immutable": false,
+        "created_at": "2025-03-27T00:25:47.108879-07:00",
+        "updated_at": "2025-03-27T00:25:47.108891-07:00",
+        "expiration_date": null
+    }, {
+        "id": "591d1a0f-7fc1-435a-ad00-af8404ab5eee",
+        "memory": "Offer letter expires on February 17, 2025.",
+        "user_id": "s1dupase34@gmail.com",
+        "metadata": null,
+        "categories": ["misc"],
+        "immutable": false,
+        "created_at": "2025-03-27T00:21:39.298550-07:00",
+        "updated_at": "2025-03-27T00:21:39.298558-07:00",
+        "expiration_date": null
+    }, {
+        "id": "6e8298e2-3c1c-4189-9ef0-b98181128e20",
+        "memory": "Siddhartha must prove identity and authorization to work in the U.S.",
+        "user_id": "s1dupase34@gmail.com",
+        "metadata": null,
+        "categories": ["personal_details", "professional_details"],
+        "immutable": false,
+        "created_at": "2025-03-27T00:21:39.257469-07:00",
+        "updated_at": "2025-03-27T00:21:39.257478-07:00",
+        "expiration_date": null
+    }, {
+        "id": "4b40ac3d-1cdf-42d1-ada6-1fa6bad002ea",
+        "memory": "Offer is contingent upon satisfactory completion of reference and background checks.",
+        "user_id": "s1dupase34@gmail.com",
+        "metadata": null,
+        "categories": ["professional_details"],
+        "immutable": false,
+        "created_at": "2025-03-27T00:21:39.211443-07:00",
+        "updated_at": "2025-03-27T00:21:39.211452-07:00",
+        "expiration_date": null
+    }, {
+        "id": "b2d4cb19-8c95-464b-81b6-88ac0d2a049e",
+        "memory": "Siddhartha must sign a Proprietary Information and Inventions Agreement.",
+        "user_id": "s1dupase34@gmail.com",
+        "metadata": null,
+        "categories": ["professional_details"],
+        "immutable": false,
+        "created_at": "2025-03-27T00:21:39.137436-07:00",
+        "updated_at": "2025-03-27T00:21:39.137444-07:00",
+        "expiration_date": null
+    }, {
+        "id": "3df35636-bd2b-4ace-a497-8172b201f010",
+        "memory": "Employment is at-will, meaning it can be terminated by either party at any time.",
+        "user_id": "s1dupase34@gmail.com",
+        "metadata": null,
+        "categories": ["professional_details", "misc"],
+        "immutable": false,
+        "created_at": "2025-03-27T00:21:39.094929-07:00",
+        "updated_at": "2025-03-27T00:21:39.094938-07:00",
+        "expiration_date": null
+    }, {
+        "id": "39c022b6-47e9-4122-9a47-c4028ab21c39",
+        "memory": "Siddhartha will be eligible for company-sponsored benefits, including health benefits and holidays.",
+        "user_id": "s1dupase34@gmail.com",
+        "metadata": null,
+        "categories": ["professional_details", "health"],
+        "immutable": false,
+        "created_at": "2025-03-27T00:21:39.055477-07:00",
+        "updated_at": "2025-03-27T00:21:39.055485-07:00",
+        "expiration_date": null
+    }, {
+        "id": "e8fcc21a-23aa-4966-a231-3ded5a82063c",
+        "memory": "Reasonable business expenses will be reimbursed according to company policy.",
+        "user_id": "s1dupase34@gmail.com",
+        "metadata": null,
+        "categories": ["professional_details"],
+        "immutable": false,
+        "created_at": "2025-03-27T00:21:38.997509-07:00",
+        "updated_at": "2025-03-27T00:21:38.997518-07:00",
+        "expiration_date": null
+    }, {
+        "id": "4841e99a-36eb-4af0-aa8d-aef085e5767d",
+        "memory": "Stock options will vest 25% after 12 months and the remaining balance over 36 months.",
+        "user_id": "s1dupase34@gmail.com",
+        "metadata": null,
+        "categories": ["professional_details"],
+        "immutable": false,
+        "created_at": "2025-03-27T00:21:38.952196-07:00",
+        "updated_at": "2025-03-27T00:21:38.952206-07:00",
+        "expiration_date": null
+    }, {
+        "id": "ac26f6e4-6b7f-412a-9427-379ee902eb4d",
+        "memory": "Stock options include the opportunity to purchase 20,000 shares of the company's common stock.",
+        "user_id": "s1dupase34@gmail.com",
+        "metadata": null,
+        "categories": ["professional_details", "technology"],
+        "immutable": false,
+        "created_at": "2025-03-27T00:21:38.911526-07:00",
+        "updated_at": "2025-03-27T00:21:38.911535-07:00",
+        "expiration_date": null
+    }, {
+        "id": "4d3bee2a-9423-4055-8edf-d2189cb78349",
+        "memory": "Siddhartha may be eligible for a salary increase based on the company's annual performance review process.",
+        "user_id": "s1dupase34@gmail.com",
+        "metadata": null,
+        "categories": ["professional_details"],
+        "immutable": false,
+        "created_at": "2025-03-27T00:21:38.864848-07:00",
+        "updated_at": "2025-03-27T00:21:38.864857-07:00",
+        "expiration_date": null
+    }, {
+        "id": "ee726c70-8497-4850-9643-dd569174adac",
+        "memory": "Position is full-time with a salary of $90,000 per year.",
+        "user_id": "s1dupase34@gmail.com",
+        "metadata": null,
+        "categories": ["professional_details"],
+        "immutable": false,
+        "created_at": "2025-03-27T00:21:38.828117-07:00",
+        "updated_at": "2025-03-27T00:21:38.828127-07:00",
+        "expiration_date": null
+    }, {
+        "id": "32452e23-dedb-4e9f-9996-b34fda430099",
+        "memory": "Duties include design, development, and maintenance of front-end and back-end features for Tasker AI",
+        "user_id": "s1dupase34@gmail.com",
+        "metadata": null,
+        "categories": ["professional_details", "technology"],
+        "immutable": false,
+        "created_at": "2025-03-27T00:21:38.784194-07:00",
+        "updated_at": "2025-03-27T00:50:41.348347-07:00",
+        "expiration_date": null
+    }, {
+        "id": "c8b21ede-dfe9-4f4b-a048-ab5dcd7ca975",
+        "memory": "Siddhartha will report to Ahmed Mohamed Ibrahim Soliman Agour, the CEO",
+        "user_id": "s1dupase34@gmail.com",
+        "metadata": null,
+        "categories": ["professional_details"],
+        "immutable": false,
+        "created_at": "2025-03-27T00:21:38.706828-07:00",
+        "updated_at": "2025-03-27T00:46:52.693331-07:00",
+        "expiration_date": null
+    }, {
+        "id": "b2d922dc-7917-44d1-8a92-d902ecc58450",
+        "memory": "Siddhartha's employment will start on January 27, 2025",
+        "user_id": "s1dupase34@gmail.com",
+        "metadata": null,
+        "categories": ["professional_details", "milestones"],
+        "immutable": false,
+        "created_at": "2025-03-27T00:21:38.669793-07:00",
+        "updated_at": "2025-03-27T00:50:36.458554-07:00",
+        "expiration_date": null
+    }, {
+        "id": "51bea4fc-a123-45ad-a1ad-dad2c370cbfd",
+        "memory": "Position offered is Software Engineer located in San Francisco.",
+        "user_id": "s1dupase34@gmail.com",
+        "metadata": null,
+        "categories": ["professional_details"],
+        "immutable": false,
+        "created_at": "2025-03-27T00:21:38.622949-07:00",
+        "updated_at": "2025-03-27T00:42:49.242174-07:00",
+        "expiration_date": null
+    }, {
+        "id": "4a5e70f5-224e-4601-8e9a-9b42b9c8da57",
+        "memory": "Offer of employment is for Siddhartha Upase from DAPI INC.",
+        "user_id": "s1dupase34@gmail.com",
+        "metadata": null,
+        "categories": ["personal_details", "professional_details"],
+        "immutable": false,
+        "created_at": "2025-03-27T00:21:38.503966-07:00",
+        "updated_at": "2025-03-27T00:21:38.503978-07:00",
+        "expiration_date": null
+    }, {
+        "id": "faf0ce78-14e4-43b7-8e8f-e38e9ba69647",
+        "memory": "Current session start date is 19 August 2024 and end date is 14 December 2024",
+        "user_id": "s1dupase34@gmail.com",
+        "metadata": null,
+        "categories": ["misc"],
+        "immutable": false,
+        "created_at": "2025-03-27T00:12:00.513808-07:00",
+        "updated_at": "2025-03-27T00:12:00.513816-07:00",
+        "expiration_date": null
+    }, {
+        "id": "2725b1e2-f55e-4879-ac71-267c9bc70fb6",
+        "memory": "Post-completion OPT is full-time and requested from 01 February 2025 to 31 January 2026",
+        "user_id": "s1dupase34@gmail.com",
+        "metadata": null,
+        "categories": ["professional_details"],
+        "immutable": false,
+        "created_at": "2025-03-27T00:12:00.472417-07:00",
+        "updated_at": "2025-03-27T00:41:37.865243-07:00",
+        "expiration_date": null
+    }, {
+        "id": "1c05e2b4-de61-48ea-b558-4989501b2242",
+        "memory": "Total funding for 9 months is $72,000",
+        "user_id": "s1dupase34@gmail.com",
+        "metadata": null,
+        "categories": ["misc"],
+        "immutable": false,
+        "created_at": "2025-03-27T00:12:00.426965-07:00",
+        "updated_at": "2025-03-27T00:12:00.426973-07:00",
+        "expiration_date": null
+    }, {
+        "id": "05295ecd-351f-435a-986a-d0ac02625bc5",
+        "memory": "Funding includes a Graduate Pathway Scholarship of $12,000 and family funds in India of $60,000",
+        "user_id": "s1dupase34@gmail.com",
+        "metadata": null,
+        "categories": ["family", "professional_details"],
+        "immutable": false,
+        "created_at": "2025-03-27T00:12:00.333045-07:00",
+        "updated_at": "2025-03-27T00:12:00.333053-07:00",
+        "expiration_date": null
+    }, {
+        "id": "4003eae5-7b41-409f-aec4-02d16f9d3be8",
+        "memory": "Total estimated costs for 9 months are $51,057",
+        "user_id": "s1dupase34@gmail.com",
+        "metadata": null,
+        "categories": ["misc"],
+        "immutable": false,
+        "created_at": "2025-03-27T00:12:00.301304-07:00",
+        "updated_at": "2025-03-27T00:12:00.301312-07:00",
+        "expiration_date": null
+    }, {
+        "id": "fba70df2-0470-46c3-9664-ea51bc059598",
+        "memory": "Health insurance cost for 9 months is $1,973",
+        "user_id": "s1dupase34@gmail.com",
+        "metadata": null,
+        "categories": ["health", "misc"],
+        "immutable": false,
+        "created_at": "2025-03-27T00:12:00.271174-07:00",
+        "updated_at": "2025-03-27T00:12:00.271183-07:00",
+        "expiration_date": null
+    }, {
+        "id": "5d6466a5-91b4-4f80-9d3d-194b3afc9207",
+        "memory": "Living expenses for 9 months are $15,790",
+        "user_id": "s1dupase34@gmail.com",
+        "metadata": null,
+        "categories": ["misc"],
+        "immutable": false,
+        "created_at": "2025-03-27T00:12:00.219735-07:00",
+        "updated_at": "2025-03-27T00:12:00.219743-07:00",
+        "expiration_date": null
+    }, {
+        "id": "a10f7312-bdf5-4660-9bac-e6ac96c8cf4a",
+        "memory": "Tuition and fees for 9 months are $33,294",
+        "user_id": "s1dupase34@gmail.com",
+        "metadata": null,
+        "categories": ["misc"],
+        "immutable": false,
+        "created_at": "2025-03-27T00:12:00.174762-07:00",
+        "updated_at": "2025-03-27T00:12:00.174770-07:00",
+        "expiration_date": null
+    }, {
+        "id": "9edb297f-d49f-4937-adfb-91c98e4256ef",
+        "memory": "Program start date is 09 January 2023 and end date is 14 December 2024",
+        "user_id": "s1dupase34@gmail.com",
+        "metadata": null,
+        "categories": ["misc"],
+        "immutable": false,
+        "created_at": "2025-03-27T00:12:00.143400-07:00",
+        "updated_at": "2025-03-27T00:12:00.143408-07:00",
+        "expiration_date": null
+    }, {
+        "id": "914287db-8b5a-441e-8f21-3198037c5d51",
+        "memory": "Major is Computer Science",
+        "user_id": "s1dupase34@gmail.com",
+        "metadata": null,
+        "categories": ["professional_details", "technology"],
+        "immutable": false,
+        "created_at": "2025-03-27T00:12:00.108884-07:00",
+        "updated_at": "2025-03-27T00:12:00.108892-07:00",
+        "expiration_date": null
+    }, {
+        "id": "9068d23e-d925-4cf9-8830-0da377d52e59",
+        "memory": "Education level is Master's",
+        "user_id": "s1dupase34@gmail.com",
+        "metadata": null,
+        "categories": ["professional_details"],
+        "immutable": false,
+        "created_at": "2025-03-27T00:12:00.069775-07:00",
+        "updated_at": "2025-03-27T00:12:00.069784-07:00",
+        "expiration_date": null
+    }, {
+        "id": "b9bad716-578a-4903-94eb-dc6139110352",
+        "memory": "School official to contact upon arrival is Moeko Mikami, the International Student Advisor",
+        "user_id": "s1dupase34@gmail.com",
+        "metadata": null,
+        "categories": ["personal_details", "professional_details"],
+        "immutable": false,
+        "created_at": "2025-03-27T00:12:00.035843-07:00",
+        "updated_at": "2025-03-27T00:12:00.035851-07:00",
+        "expiration_date": null
+    }, {
+        "id": "a313153e-297a-4913-a3f8-86b632a9de95",
+        "memory": "School address is 10 W 35th St, Galvin Tower (2nd Floor), Chicago, IL 60616",
+        "user_id": "s1dupase34@gmail.com",
+        "metadata": null,
+        "categories": ["personal_details"],
+        "immutable": false,
+        "created_at": "2025-03-27T00:11:59.994616-07:00",
+        "updated_at": "2025-03-27T00:11:59.994625-07:00",
+        "expiration_date": null
+    }, {
+        "id": "03034aba-b5c3-46cc-8e47-a4f5151949bb",
+        "memory": "Class of admission is F-1",
+        "user_id": "s1dupase34@gmail.com",
+        "metadata": null,
+        "categories": ["misc"],
+        "immutable": false,
+        "created_at": "2025-03-27T00:11:59.957439-07:00",
+        "updated_at": "2025-03-27T00:11:59.957448-07:00",
+        "expiration_date": null
+    }, {
+        "id": "901c05f4-1460-4263-b5a3-179f785d13e2",
+        "memory": "Country of citizenship is India",
+        "user_id": "s1dupase34@gmail.com",
+        "metadata": null,
+        "categories": ["personal_details"],
+        "immutable": false,
+        "created_at": "2025-03-27T00:11:59.909763-07:00",
+        "updated_at": "2025-03-27T00:11:59.909771-07:00",
+        "expiration_date": null
+    }, {
+        "id": "429ac201-51f7-4cf9-8b45-f8a668b2b35d",
+        "memory": "Country of birth is India",
+        "user_id": "s1dupase34@gmail.com",
+        "metadata": null,
+        "categories": ["personal_details"],
+        "immutable": false,
+        "created_at": "2025-03-27T00:11:59.880289-07:00",
+        "updated_at": "2025-03-27T00:11:59.880298-07:00",
+        "expiration_date": null
+    }, {
+        "id": "eb020fad-7ea7-42f7-a10d-d60d7d497ef7",
+        "memory": "Preferred name is Siddhartha Upase",
+        "user_id": "s1dupase34@gmail.com",
+        "metadata": null,
+        "categories": ["personal_details"],
+        "immutable": false,
+        "created_at": "2025-03-27T00:11:59.850462-07:00",
+        "updated_at": "2025-03-27T00:11:59.850473-07:00",
+        "expiration_date": null
+    }, {
+        "id": "bbc37646-ff6d-49bd-8988-637021aac713",
+        "memory": "SEVIS ID is N0033565288",
+        "user_id": "s1dupase34@gmail.com",
+        "metadata": null,
+        "categories": ["personal_details"],
+        "immutable": false,
+        "created_at": "2025-03-27T00:11:59.798690-07:00",
+        "updated_at": "2025-03-27T00:11:59.798703-07:00",
+        "expiration_date": null
+    }, {
+        "id": "bbb847ae-4009-4406-bd9d-3a9479a922b5",
+        "memory": "User's address is RH 4, Plot No 50, CDC, Chikhali Road, Chinchwad, Pune, Maharashtra, India",
+        "user_id": "s1dupase34@gmail.com",
+        "metadata": null,
+        "categories": ["personal_details"],
+        "immutable": false,
+        "created_at": "2025-03-27T00:08:14.250356-07:00",
+        "updated_at": "2025-03-27T00:08:14.250368-07:00",
+        "expiration_date": null
+    }, {
+        "id": "4ec9cf47-2a32-4c15-be9a-815b777d7502",
+        "memory": "User's mother's name is Geeta Sureshkumar Upase",
+        "user_id": "s1dupase34@gmail.com",
+        "metadata": null,
+        "categories": ["personal_details", "family"],
+        "immutable": false,
+        "created_at": "2025-03-27T00:08:08.043274-07:00",
+        "updated_at": "2025-03-27T00:08:08.043285-07:00",
+        "expiration_date": null
+    }, {
+        "id": "85895fb4-0669-4e48-b58a-dce07e90b312",
+        "memory": "User's father's name is Sureshkumar Mallikarjunappa Upase",
+        "user_id": "s1dupase34@gmail.com",
+        "metadata": null,
+        "categories": ["personal_details", "family"],
+        "immutable": false,
+        "created_at": "2025-03-27T00:08:04.641665-07:00",
+        "updated_at": "2025-03-27T00:08:04.641676-07:00",
+        "expiration_date": null
+    }, {
+        "id": "bf793f60-2da4-49e8-8352-c52b5ed07025",
+        "memory": "Associated with the Illinois Institute of Technology",
+        "user_id": "s1dupase34@gmail.com",
+        "metadata": null,
+        "categories": ["professional_details"],
+        "immutable": false,
+        "created_at": "2025-03-27T00:08:00.853869-07:00",
+        "updated_at": "2025-03-27T00:08:00.853881-07:00",
+        "expiration_date": null
+    }, {
+        "id": "2dd18305-2922-4ff4-b3ca-bec04fed0ca1",
+        "memory": "Visa will expire on November 20, 2027",
+        "user_id": "s1dupase34@gmail.com",
+        "metadata": null,
+        "categories": ["personal_details"],
+        "immutable": false,
+        "created_at": "2025-03-27T00:07:56.034245-07:00",
+        "updated_at": "2025-03-27T00:07:56.034258-07:00",
+        "expiration_date": null
+    }, {
+        "id": "036e4d30-1a7a-41a1-94a1-f55e74a56f54",
+        "memory": "Visa was issued on November 23, 2022",
+        "user_id": "s1dupase34@gmail.com",
+        "metadata": null,
+        "categories": ["personal_details"],
+        "immutable": false,
+        "created_at": "2025-03-27T00:07:50.619934-07:00",
+        "updated_at": "2025-03-27T00:07:50.619947-07:00",
+        "expiration_date": null
+    }, {
+        "id": "ce1065a9-fdb4-4226-af6c-075923c6fe10",
+        "memory": "Visa type is F1",
+        "user_id": "s1dupase34@gmail.com",
+        "metadata": null,
+        "categories": ["misc"],
+        "immutable": false,
+        "created_at": "2025-03-27T00:07:47.993038-07:00",
+        "updated_at": "2025-03-27T00:07:47.993050-07:00",
+        "expiration_date": null
+    }, {
+        "id": "460d1479-8643-48ef-875d-0ed3ddc3bc2b",
+        "memory": "The visa was issued in Mumbai (Bombay)",
+        "user_id": "s1dupase34@gmail.com",
+        "metadata": null,
+        "categories": ["misc"],
+        "immutable": false,
+        "created_at": "2025-03-27T00:07:42.225509-07:00",
+        "updated_at": "2025-03-27T00:07:42.225521-07:00",
+        "expiration_date": null
+    }, {
+        "id": "27ecb23a-016c-49be-83e5-a4734015f31d",
+        "memory": "Has a visa for the United States of America",
+        "user_id": "s1dupase34@gmail.com",
+        "metadata": null,
+        "categories": ["travel"],
+        "immutable": false,
+        "created_at": "2025-03-27T00:07:32.985619-07:00",
+        "updated_at": "2025-03-27T00:07:32.985631-07:00",
+        "expiration_date": null
+    }, {
+        "id": "f7e84f1d-f233-4f1d-804c-58dcfb583b3c",
+        "memory": "Passport number is S5113571",
+        "user_id": "s1dupase34@gmail.com",
+        "metadata": null,
+        "categories": ["personal_details"],
+        "immutable": false,
+        "created_at": "2025-03-27T00:07:27.081411-07:00",
+        "updated_at": "2025-03-27T00:07:27.081424-07:00",
+        "expiration_date": null
+    }, {
+        "id": "035158cf-96d0-4fe1-aeb4-675e4afcce6e",
+        "memory": "Passport will expire on June 22, 2028",
+        "user_id": "s1dupase34@gmail.com",
+        "metadata": null,
+        "categories": ["personal_details"],
+        "immutable": false,
+        "created_at": "2025-03-27T00:07:14.701280-07:00",
+        "updated_at": "2025-03-27T00:07:14.701292-07:00",
+        "expiration_date": null
+    }, {
+        "id": "c2ea81fb-1af9-4278-8dbe-40dae9156ae9",
+        "memory": "Date of issue for the passport is June 23, 2018",
+        "user_id": "s1dupase34@gmail.com",
+        "metadata": null,
+        "categories": ["personal_details"],
+        "immutable": false,
+        "created_at": "2025-03-27T00:07:09.627612-07:00",
+        "updated_at": "2025-03-27T00:07:09.627625-07:00",
+        "expiration_date": null
+    }, {
+        "id": "3e6265f1-7bc7-481a-9541-0d8597c2b204",
+        "memory": "The passport was issued in Pune",
+        "user_id": "s1dupase34@gmail.com",
+        "metadata": null,
+        "categories": ["misc"],
+        "immutable": false,
+        "created_at": "2025-03-27T00:07:05.348477-07:00",
+        "updated_at": "2025-03-27T00:07:05.348489-07:00",
+        "expiration_date": null
+    }, {
+        "id": "38cbeb63-16a4-479f-bff4-7a64a679fd38",
+        "memory": "Place of birth is Banhatti, Karnataka",
+        "user_id": "s1dupase34@gmail.com",
+        "metadata": null,
+        "categories": ["personal_details"],
+        "immutable": false,
+        "created_at": "2025-03-27T00:07:00.723476-07:00",
+        "updated_at": "2025-03-27T00:07:00.723487-07:00",
+        "expiration_date": null
+    }, {
+        "id": "123bbd3b-6989-4ef1-8699-62f58ddc2a83",
+        "memory": "User was born on December 13, 2000",
+        "user_id": "s1dupase34@gmail.com",
+        "metadata": null,
+        "categories": ["personal_details"],
+        "immutable": false,
+        "created_at": "2025-03-27T00:06:55.635874-07:00",
+        "updated_at": "2025-03-27T00:06:55.635887-07:00",
+        "expiration_date": null
+    }, {
+        "id": "20c6289e-a140-4048-af6a-2cb84f10a52a",
+        "memory": "User's nationality is Indian",
+        "user_id": "s1dupase34@gmail.com",
+        "metadata": null,
+        "categories": ["personal_details"],
+        "immutable": false,
+        "created_at": "2025-03-27T00:06:51.041256-07:00",
+        "updated_at": "2025-03-27T00:06:51.041268-07:00",
+        "expiration_date": null
+    }, {
+        "id": "3428a7f7-372b-44d8-ba9c-341f1bdf0c92",
+        "memory": "Given name is Siddhartha Sureshkumar",
+        "user_id": "s1dupase34@gmail.com",
+        "metadata": null,
+        "categories": ["personal_details"],
+        "immutable": false,
+        "created_at": "2025-03-27T00:06:47.633351-07:00",
+        "updated_at": "2025-03-27T00:06:47.633363-07:00",
+        "expiration_date": null
+    }, {
+        "id": "50bfceb7-b78a-4120-842a-f0a94583678e",
+        "memory": "User's surname is Upase",
+        "user_id": "s1dupase34@gmail.com",
+        "metadata": null,
+        "categories": ["personal_details"],
+        "immutable": false,
+        "created_at": "2025-03-27T00:06:43.535382-07:00",
+        "updated_at": "2025-03-27T00:06:43.535394-07:00",
+        "expiration_date": null
+    }, {
+        "id": "03ac6a6d-5efa-445c-b199-1b984cdd243c",
+        "memory": "The passport belongs to the Republic of India",
+        "user_id": "s1dupase34@gmail.com",
+        "metadata": null,
+        "categories": ["misc"],
+        "immutable": false,
+        "created_at": "2025-03-27T00:06:41.527690-07:00",
+        "updated_at": "2025-03-27T00:06:41.527702-07:00",
+        "expiration_date": null
+    }]
+}
