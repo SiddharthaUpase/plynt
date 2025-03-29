@@ -27,17 +27,17 @@ const String openaiApiKey = String.fromEnvironment(
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Try to load environment variables from .env files
-  try {
-    await dotenv.load(fileName: ".env");
-  } catch (e) {
-    try {
-      await dotenv.load(fileName: ".env.default");
-      print('Using default environment configuration');
-    } catch (e) {
-      print('Could not load .env files, using dart-define values');
-    }
-  }
+  // // Try to load environment variables from .env files
+  // try {
+  //   await dotenv.load(fileName: ".env");
+  // } catch (e) {
+  //   try {
+  //     await dotenv.load(fileName: ".env.default");
+  //     print('Using default environment configuration');
+  //   } catch (e) {
+  //     print('Could not load .env files, using dart-define values');
+  //   }
+  // }
 
   // Get API keys from dotenv or use dart-define defaults
   final String apiUrl = dotenv.env['SUPABASE_URL'] ?? supabaseUrl;
