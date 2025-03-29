@@ -13,12 +13,11 @@ import 'views/splash_view.dart';
 // Environment variables from dart-define
 const String supabaseUrl = String.fromEnvironment(
   'SUPABASE_URL',
-  defaultValue: 'https://ymkaebbyuiqfbjvifsjt.supabase.co',
+  defaultValue: '',
 );
 const String supabaseAnonKey = String.fromEnvironment(
   'SUPABASE_ANON_KEY',
-  defaultValue:
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlta2FlYmJ5dWlxZmJqdmlmc2p0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDMwNDEyNzksImV4cCI6MjA1ODYxNzI3OX0.H7aMBXv7MoftclnV23Nlf5VPrqLYEL6wlXLSvu7_734',
+  defaultValue: '',
 );
 const String openaiApiKey = String.fromEnvironment(
   'OPENAI_API_KEY',
