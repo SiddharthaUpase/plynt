@@ -38,12 +38,13 @@ class DocumentController extends GetxController {
   final RxInt totalProcessingSteps = 6.obs;
   final RxBool isProcessing = false.obs;
 
+  var apiKey = String.fromEnvironment('OPENAI_API_KEY', defaultValue: '');
+
   @override
   void onInit() {
     super.onInit();
     // Get the API key from ChatController
-    final chatController = Get.find<ChatController>();
-    openAIService = OpenAIService(apiKey: chatController.openAIService.apiKey);
+    openAIService = OpenAIService(apiKey: apiKey);
 
     //add a delay so that the user is fetched
     Future.delayed(const Duration(milliseconds: 600), () {
