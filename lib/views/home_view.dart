@@ -14,9 +14,12 @@ class HomeView extends GetView<DocumentController> {
   @override
   Widget build(BuildContext context) {
     // Make sure to refresh documents when this page is shown
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.fetchDocuments();
+    });
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFF202123),
       body: Stack(
         children: [
           Row(

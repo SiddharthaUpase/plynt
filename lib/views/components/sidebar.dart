@@ -196,7 +196,40 @@ class Sidebar extends GetView<DocumentController> {
           _buildNavItem(
             icon: Icons.logout,
             title: 'Logout',
-            onTap: () => authController.signOut(),
+            onTap: () {
+              Get.dialog(
+                AlertDialog(
+                  backgroundColor: const Color(0xFF343541),
+                  title: const Text(
+                    'Confirm Logout',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  content: const Text(
+                    'Are you sure you want to logout?',
+                    style: TextStyle(color: Colors.white70),
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Get.back(),
+                      child: const Text(
+                        'Cancel',
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        Get.back();
+                        authController.signOut();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.deepPurple,
+                      ),
+                      child: const Text('Logout'),
+                    ),
+                  ],
+                ),
+              );
+            },
           ),
           const SizedBox(height: 16),
         ],

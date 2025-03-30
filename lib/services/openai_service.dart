@@ -1,15 +1,49 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class OpenAIService {
   // Get API key from environment variables - check platform environment variables first
 
-  static const String apiUrl = 'https://api.openai.com/v1/chat/completions';
+  static const String service_in_use = 'groq';
 
-  final String apiKey = String.fromEnvironment(
-    'OPENAI_API_KEY',
-    defaultValue: '',
-  );
+  static String getApiUrl(String endpoint) {
+    final baseUrl =
+        service_in_use == 'openai'
+            ? 'https://api.openai.com/v1'
+            : 'https://api.groq.com/openai/v1';
+
+    return '$baseUrl/$endpoint';
+  }
+
+  String get apiKey {
+    var apiKey = '';
+    // Check if we're running on localhost
+    const defaultOpenaiKey = String.fromEnvironment(
+      'OPENAI_API_KEY',
+      defaultValue: '',
+    );
+    const defaultGroqKey = String.fromEnvironment(
+      'GROQ_API_KEY',
+      defaultValue: '',
+    );
+
+    // If we're on localhost, try to get the key from .env file
+    if (Uri.base.host.contains('localhost')) {
+      print('Running on localhost, getting OpenAI key from .env file');
+      if (service_in_use == 'openai') {
+        print('Using OpenAI API key from .env file');
+        final envKey = dotenv.env['OPENAI_API_KEY'] ?? '';
+        apiKey = envKey.isNotEmpty ? envKey : defaultOpenaiKey;
+      } else {
+        print('Using Groq API key from .env file');
+        final envKey = dotenv.env['GROQ_API_KEY'] ?? '';
+        apiKey = envKey.isNotEmpty ? envKey : defaultGroqKey;
+      }
+    }
+
+    return apiKey;
+  }
 
   // Function to get a response for chat interaction
   Future<String> getChatResponse(String userMessage) async {
@@ -17,22 +51,28 @@ class OpenAIService {
       // System message to set the context for the AI
       const systemMessage = '''
       You are a helpful document assistant with access to the user's uploaded documents. 
+      Keep responses extremely concise and to the point. Avoid unnecessary explanations or verbosity.
       When provided with information from documents, use it to give accurate, concise answers.
+      When answering questions about information the user has shared in previous messages, refer to that conversation history.
+      Always consider both CONVERSATION CONTEXT and DOCUMENT INFORMATION when answering queries.
       If document information is provided in the user's query, consider this information as verified facts.
-      Keep your responses helpful and informative, but concise.
-      If asked about something that isn't in the provided document information, be honest about not having that specific information.
+      If asked about something that isn't in the provided document information or conversation history, be honest about not having that specific information.
+      If the user's query is vague or incomplete, ask for specific details needed to provide a helpful response.
       ''';
 
-      print('Sending message to OpenAI: ${userMessage.length} characters');
+      print(
+        'Sending message to ${service_in_use == 'groq' ? 'Groq' : 'OpenAI'}: ${userMessage.length} characters',
+      );
+      print('Using model: llama-3.1-8b-instant');
 
       final response = await http.post(
-        Uri.parse(apiUrl),
+        Uri.parse(getApiUrl('chat/completions')),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $apiKey',
         },
         body: jsonEncode({
-          'model': 'gpt-4o-mini',
+          'model': 'llama-3.1-8b-instant',
           'messages': [
             {'role': 'system', 'content': systemMessage},
             {'role': 'user', 'content': userMessage},
@@ -49,8 +89,10 @@ class OpenAIService {
         return aiResponse;
       } else {
         //print api key
-        print('API key: $apiKey');
-        print('OpenAI API error: ${response.body}');
+        print(
+          'API key: ${apiKey.substring(0, 4)}...${apiKey.substring(apiKey.length - 4)}',
+        );
+        print('${service_in_use.toUpperCase()} API error: ${response.body}');
         return "I'm sorry, I encountered an error. Please try again later.";
       }
     } catch (e) {
@@ -59,19 +101,69 @@ class OpenAIService {
     }
   }
 
-  // New method to categorize a message as query or statement
-  Future<String> categorizeMessage(String message) async {
+  // Function to summarize a conversation
+  Future<String> summarizeConversation(String conversationText) async {
     try {
-      print('Categorizing message: $message');
+      print('Summarizing conversation');
+      print('Using model: llama-3.1-8b-instant');
+
+      const systemMessage = '''
+      You are a conversation summarizer. Your task is to create a very concise but comprehensive summary 
+      of the conversation, capturing only key information, questions, and insights.
+      Focus on information that would be useful for continuing the conversation.
+      Ignore pleasantries and focus on substantive content.
+      Keep the summary as brief as possible without losing important context.
+      ''';
 
       final response = await http.post(
-        Uri.parse(apiUrl),
+        Uri.parse(getApiUrl('chat/completions')),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $apiKey',
         },
         body: jsonEncode({
-          'model': 'gpt-4o-mini',
+          'model': 'llama-3.1-8b-instant',
+          'messages': [
+            {'role': 'system', 'content': systemMessage},
+            {'role': 'user', 'content': conversationText},
+          ],
+          'temperature': 0.5,
+          'max_tokens': 400,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final summary =
+            data['choices'][0]['message']['content'].toString().trim();
+        return summary;
+      } else {
+        print(
+          'API key: ${apiKey.substring(0, 4)}...${apiKey.substring(apiKey.length - 4)}',
+        );
+        print('${service_in_use.toUpperCase()} API error: ${response.body}');
+        return "Failed to summarize conversation.";
+      }
+    } catch (e) {
+      print('Error summarizing conversation: $e');
+      return "Failed to summarize conversation.";
+    }
+  }
+
+  // New method to categorize a message as query or statement
+  Future<String> categorizeMessage(String message) async {
+    try {
+      print('Categorizing message: $message');
+      print('Using model: llama-3.1-8b-instant');
+
+      final response = await http.post(
+        Uri.parse(getApiUrl('chat/completions')),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $apiKey',
+        },
+        body: jsonEncode({
+          'model': 'llama-3.1-8b-instant',
           'messages': [
             {
               'role': 'system',
@@ -106,9 +198,10 @@ class OpenAIService {
           return "query";
         }
       } else {
-        //print api key
-        print('API key: $apiKey');
-        print('OpenAI API error: ${response.body}');
+        print(
+          'API key: ${apiKey.substring(0, 4)}...${apiKey.substring(apiKey.length - 4)}',
+        );
+        print('${service_in_use.toUpperCase()} API error: ${response.body}');
         return "query"; // Default to query on error
       }
     } catch (e) {
@@ -121,15 +214,16 @@ class OpenAIService {
   Future<bool> isPositiveResponse(String response) async {
     try {
       print('Analyzing sentiment of response: $response');
+      print('Using model: llama-3.1-8b-instant');
 
       final apiResponse = await http.post(
-        Uri.parse(apiUrl),
+        Uri.parse(getApiUrl('chat/completions')),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $apiKey',
         },
         body: jsonEncode({
-          'model': 'gpt-4o-mini',
+          'model': 'llama-3.1-8b-instant',
           'messages': [
             {
               'role': 'system',
@@ -156,7 +250,10 @@ class OpenAIService {
         // Return true for positive responses
         return sentiment == "positive";
       } else {
-        print('OpenAI API error: ${apiResponse.body}');
+        print(
+          'API key: ${apiKey.substring(0, 4)}...${apiKey.substring(apiKey.length - 4)}',
+        );
+        print('${service_in_use.toUpperCase()} API error: ${apiResponse.body}');
         // Default to false on error
         return false;
       }
@@ -182,12 +279,29 @@ class OpenAIService {
       // Format base64 content as a data URL
       String dataUrl = 'data:$mimeType;base64,$base64FileContent';
 
-      // Create a prompt for OpenAI with file content
+      // Always use OpenAI for document processing, regardless of service_in_use setting
+      final String openaiApiKey =
+          service_in_use == 'openai'
+              ? apiKey
+              : dotenv.env['OPENAI_API_KEY'] ?? '';
+
+      if (openaiApiKey.isEmpty) {
+        print('OpenAI API key not found for document processing');
+        return {
+          'description': 'API key for document processing not available',
+          'tag': _getDefaultTag(fileName, fileType),
+        };
+      }
+
+      print('Using OpenAI for document processing with model: gpt-4o');
+      print('OpenAI key available: ${openaiApiKey.isNotEmpty}');
+
+      // Create a prompt for OpenAI with file content - use OpenAI directly
       final response = await http.post(
-        Uri.parse(apiUrl),
+        Uri.parse('https://api.openai.com/v1/chat/completions'),
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer $apiKey',
+          'Authorization': 'Bearer $openaiApiKey',
         },
         body: jsonEncode({
           'model': 'gpt-4o',
@@ -328,14 +442,17 @@ class OpenAIService {
       travel, finance, education, health, personal, work, legal, receipts, housing
       ''';
 
+      print('Generating tag for document: $fileName');
+      print('Using model: llama-3.1-8b-instant');
+
       final response = await http.post(
-        Uri.parse(apiUrl),
+        Uri.parse(getApiUrl('chat/completions')),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $apiKey',
         },
         body: jsonEncode({
-          'model': 'gpt-3.5-turbo',
+          'model': 'llama-3.1-8b-instant',
           'messages': [
             {
               'role': 'system',
@@ -360,9 +477,13 @@ class OpenAIService {
         // Remove any non-alphanumeric characters and ensure it's a single word
         tag = tag.replaceAll(RegExp(r'[^a-zA-Z]'), '');
 
+        print('Generated tag: $tag');
         return tag;
       } else {
-        print('OpenAI API error: ${response.body}');
+        print(
+          'API key: ${apiKey.substring(0, 4)}...${apiKey.substring(apiKey.length - 4)}',
+        );
+        print('${service_in_use.toUpperCase()} API error: ${response.body}');
         return _getDefaultTag(fileName, fileType);
       }
     } catch (e) {
@@ -404,15 +525,16 @@ class OpenAIService {
   Future<bool> isWorthSaving(String statement) async {
     try {
       print('Evaluating if worth saving: $statement');
+      print('Using model: llama-3.1-8b-instant');
 
       final response = await http.post(
-        Uri.parse(apiUrl),
+        Uri.parse(getApiUrl('chat/completions')),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $apiKey',
         },
         body: jsonEncode({
-          'model': 'gpt-4o-mini',
+          'model': 'llama-3.1-8b-instant',
           'messages': [
             {
               'role': 'system',
@@ -439,7 +561,10 @@ class OpenAIService {
         // Return true if worth saving
         return evaluation == "yes";
       } else {
-        print('OpenAI API error: ${response.body}');
+        print(
+          'API key: ${apiKey.substring(0, 4)}...${apiKey.substring(apiKey.length - 4)}',
+        );
+        print('${service_in_use.toUpperCase()} API error: ${response.body}');
         return false; // Default to not saving on error
       }
     } catch (e) {
@@ -452,15 +577,16 @@ class OpenAIService {
   Future<bool> requiresMemorySearch(String query) async {
     try {
       print('Evaluating if query needs memory search: $query');
+      print('Using model: llama-3.1-8b-instant');
 
       final response = await http.post(
-        Uri.parse(apiUrl),
+        Uri.parse(getApiUrl('chat/completions')),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $apiKey',
         },
         body: jsonEncode({
-          'model': 'gpt-4o-mini',
+          'model': 'llama-3.1-8b-instant',
           'messages': [
             {
               'role': 'system',
@@ -487,12 +613,100 @@ class OpenAIService {
         // Return true if memory search is needed
         return evaluation == "yes";
       } else {
-        print('OpenAI API error: ${response.body}');
+        print(
+          'API key: ${apiKey.substring(0, 4)}...${apiKey.substring(apiKey.length - 4)}',
+        );
+        print('${service_in_use.toUpperCase()} API error: ${response.body}');
         return true; // Default to searching memory on error (safer)
       }
     } catch (e) {
       print('Error evaluating query memory need: $e');
       return true; // Default to searching memory on error (safer)
+    }
+  }
+
+  // Combined function to both categorize a message and evaluate if it's worth saving
+  // NOTE: As of the latest update, we're only using this for message categorization
+  // and no longer saving statements to memory
+  Future<Map<String, dynamic>> analyzeMessage(String message) async {
+    try {
+      print('-------------------------------------------');
+      print('COMBINED ANALYSIS - Analyzing message: "$message"');
+      print('Using model: llama-3.1-8b-instant');
+
+      final response = await http.post(
+        Uri.parse(getApiUrl('chat/completions')),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $apiKey',
+        },
+        body: jsonEncode({
+          'model': 'llama-3.1-8b-instant',
+          'messages': [
+            {
+              'role': 'system',
+              'content':
+                  'You are a message analyzer. Categorize the user message as either "query" if it\'s a question or information request, or "statement" if it\'s providing information or making a statement.\n\n'
+                  'Respond with a JSON object having two keys: "category" (with value "query" or "statement") and "worth_saving" (with value true or false). For example: {"category": "query", "worth_saving": false}\n\n'
+                  'The worth_saving flag is retained for backward compatibility but is no longer used.',
+            },
+            {'role': 'user', 'content': message},
+          ],
+          'temperature': 0.3,
+          'max_tokens': 50,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final aiResponse =
+            data['choices'][0]['message']['content'].toString().trim();
+
+        try {
+          // Parse the JSON response
+          // Handle cases where the model might include backticks for code blocks
+          String jsonStr = aiResponse;
+          if (jsonStr.contains('```')) {
+            jsonStr = jsonStr.replaceAll(RegExp(r'```json|```'), '').trim();
+          }
+
+          final Map<String, dynamic> result = jsonDecode(jsonStr);
+
+          // Validate and normalize the results
+          String category =
+              (result['category'] ?? 'query').toString().toLowerCase();
+          bool worthSaving = result['worth_saving'] == true;
+
+          // Ensure category is either "query" or "statement"
+          if (category != "query" && category != "statement") {
+            print('Unexpected category: $category. Defaulting to "query".');
+            category = "query";
+          }
+
+          print(
+            'COMBINED RESULT - Category: $category, Worth saving: $worthSaving',
+          );
+          print('-------------------------------------------');
+
+          return {'category': category, 'worth_saving': worthSaving};
+        } catch (e) {
+          print('Error parsing analysis result: $e');
+          print('Raw response: $aiResponse');
+          // Default values on error
+          return {'category': 'query', 'worth_saving': false};
+        }
+      } else {
+        print(
+          'API key: ${apiKey.substring(0, 4)}...${apiKey.substring(apiKey.length - 4)}',
+        );
+        print('${service_in_use.toUpperCase()} API error: ${response.body}');
+        // Default values on error
+        return {'category': 'query', 'worth_saving': false};
+      }
+    } catch (e) {
+      print('Error analyzing message: $e');
+      // Default values on error
+      return {'category': 'query', 'worth_saving': false};
     }
   }
 }

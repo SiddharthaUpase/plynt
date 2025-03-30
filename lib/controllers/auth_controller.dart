@@ -1,6 +1,8 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/user_model.dart';
+import '../controllers/document_controller.dart';
 
 class AuthController extends GetxController {
   final Rx<UserModel?> _currentUser = Rx<UserModel?>(null);
@@ -24,9 +26,18 @@ class AuthController extends GetxController {
     }
 
     // Listen for auth state changes
-    supabase.auth.onAuthStateChange.listen((data) {
+    supabase.auth.onAuthStateChange.listen((data) async {
       if (data.event == AuthChangeEvent.signedIn) {
-        fetchCurrentUser();
+        await fetchCurrentUser();
+
+        // Also fetch documents on sign in
+        final documentController = Get.find<DocumentController>();
+        await documentController.fetchDocuments();
+
+        // Navigate to home if needed
+        if (Get.currentRoute != '/home') {
+          Get.offAllNamed('/home');
+        }
       } else if (data.event == AuthChangeEvent.signedOut) {
         _currentUser.value = null;
       }
@@ -71,6 +82,14 @@ class AuthController extends GetxController {
     try {
       _isLoading.value = true;
       await supabase.auth.signInWithPassword(email: email, password: password);
+
+      // Make sure user data is loaded
+      await fetchCurrentUser();
+
+      // Fetch documents after login
+      final documentController = Get.find<DocumentController>();
+      await documentController.fetchDocuments();
+
       Get.offAllNamed('/home');
     } catch (e) {
       Get.snackbar('Error', e.toString());
@@ -93,11 +112,18 @@ class AuthController extends GetxController {
       );
       Get.snackbar(
         'Success',
-        'Registration successful! Please check your email.',
+        'Account created successfully!',
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
       );
     } catch (e) {
       print('Error signing up: $e');
-      Get.snackbar('Error', e.toString());
+      Get.snackbar(
+        'Error',
+        e.toString(),
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
     } finally {
       _isLoading.value = false;
     }
@@ -110,6 +136,9 @@ class AuthController extends GetxController {
         Provider.google,
         redirectTo: 'io.supabase.flutterquickstart://login-callback/',
       );
+
+      // We can't directly fetch documents here because OAuth is asynchronous
+      // The onAuthStateChange listener will handle fetching the user data
     } catch (e) {
       Get.snackbar('Error', e.toString());
     } finally {

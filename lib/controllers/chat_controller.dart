@@ -34,9 +34,12 @@ class ChatController extends GetxController {
   final RxBool isSearchingMemories = false.obs;
   final RxList<String> relevantMemories = <String>[].obs;
 
-  // New properties for memory confirmation
-  final RxBool isAwaitingMemoryConfirmation = false.obs;
-  final RxString pendingMemoryContent = ''.obs;
+  // New properties for context management
+  final RxString conversationSummary = ''.obs;
+  final RxBool isSummarizing = false.obs;
+  final int maxContextChars = 3000; // Character limit before summarization
+  final RxInt messageIndexAfterLastSummary =
+      0.obs; // Track messages after last summary
 
   // Number of previous messages to include as context
   final int contextWindowSize = 6;
@@ -56,6 +59,102 @@ class ChatController extends GetxController {
         timestamp: DateTime.now(),
       ),
     );
+  }
+
+  // New method to build the full conversation context
+  String _buildFullContext() {
+    if (messages.isEmpty) return "";
+
+    StringBuffer contextBuilder = StringBuffer();
+
+    // Add summary if available
+    if (conversationSummary.value.isNotEmpty) {
+      contextBuilder.writeln("CONVERSATION SUMMARY:");
+      contextBuilder.writeln(conversationSummary.value);
+      contextBuilder.writeln("\nRECENT MESSAGES:");
+    }
+
+    // Add recent messages (those after the last summary)
+    for (int i = messageIndexAfterLastSummary.value; i < messages.length; i++) {
+      final msg = messages[i];
+      String speaker = msg.isUser ? "User" : "Assistant";
+      contextBuilder.writeln("$speaker: ${msg.message}");
+    }
+
+    return contextBuilder.toString();
+  }
+
+  // New method to summarize the conversation
+  Future<void> _summarizeConversation() async {
+    if (messages.length <= 1) return; // Nothing to summarize
+
+    isSummarizing.value = true;
+
+    try {
+      // Create prompt for summarization
+      StringBuffer conversationText = StringBuffer();
+      conversationText.writeln("Please summarize the following conversation:");
+
+      // Include existing summary if available
+      if (conversationSummary.value.isNotEmpty) {
+        conversationText.writeln("\nPrevious summary:");
+        conversationText.writeln(conversationSummary.value);
+        conversationText.writeln("\nNew messages to incorporate:");
+      }
+
+      // Add messages since last summary
+      for (
+        int i = messageIndexAfterLastSummary.value;
+        i < messages.length;
+        i++
+      ) {
+        final msg = messages[i];
+        String speaker = msg.isUser ? "User" : "Assistant";
+        conversationText.writeln("$speaker: ${msg.message}");
+      }
+
+      print('Summarizing conversation...');
+
+      // Ask LLM to summarize using dedicated summarization method
+      final summary = await openAIService.summarizeConversation(
+        conversationText.toString(),
+      );
+
+      // Update the summary and tracking index
+      conversationSummary.value = summary;
+      messageIndexAfterLastSummary.value = messages.length;
+
+      print(
+        'Conversation summarized. New summary length: ${summary.length} chars',
+      );
+      print('Summary: $summary');
+    } catch (e) {
+      print('Error summarizing conversation: $e');
+    } finally {
+      isSummarizing.value = false;
+    }
+  }
+
+  // Get current context for debugging
+  Future<void> debugContext() async {
+    final context = _buildFullContext();
+    print('--- CURRENT CONTEXT (${context.length} chars) ---');
+    print(context);
+    print('--- END CONTEXT ---');
+
+    print('Messages total: ${messages.length}');
+    print(
+      'Messages since last summary: ${messages.length - messageIndexAfterLastSummary.value}',
+    );
+    print('Has summary: ${conversationSummary.value.isNotEmpty}');
+    print('Summary length: ${conversationSummary.value.length}');
+  }
+
+  // Manually trigger summarization (for testing)
+  Future<void> triggerSummarization() async {
+    print('Manually triggering summarization...');
+    await _summarizeConversation();
+    await debugContext();
   }
 
   Future<void> sendMessage(String text) async {
@@ -81,66 +180,71 @@ class ChatController extends GetxController {
         throw Exception('No user ID available');
       }
 
-      // Check if we're waiting for confirmation to add to memory
-      if (isAwaitingMemoryConfirmation.value) {
-        await _handleMemoryConfirmation(text, userId);
+      // Special commands for debugging
+      if (text == "!debug_context") {
+        await debugContext();
+        final aiMessage = ChatMessage(
+          message:
+              "Context debugging information has been printed to the console.",
+          isUser: false,
+          timestamp: DateTime.now(),
+        );
+        messages.add(aiMessage);
+        isTyping.value = false;
+        return;
+      } else if (text == "!summarize") {
+        await triggerSummarization();
+        final aiMessage = ChatMessage(
+          message:
+              "Conversation has been summarized. Summary: ${conversationSummary.value}",
+          isUser: false,
+          timestamp: DateTime.now(),
+        );
+        messages.add(aiMessage);
+        isTyping.value = false;
+        return;
+      }
+
+      // Use the combined analysis just to categorize the message
+      final messageAnalysis = await openAIService.analyzeMessage(text);
+      final messageType = messageAnalysis['category'] as String;
+
+      print('Message analysis - Category: $messageType');
+
+      // Get current context for response generation
+      String currentContext = _buildFullContext();
+      print('Current context length: ${currentContext.length}');
+
+      // Check if we need to summarize
+      if (currentContext.length > maxContextChars && !isSummarizing.value) {
+        print(
+          'Context length (${currentContext.length}) exceeds maximum (${maxContextChars}). Summarizing...',
+        );
+        await _summarizeConversation();
+        // Rebuild context with summary
+        currentContext = _buildFullContext();
+        print(
+          'New context length after summarization: ${currentContext.length}',
+        );
+      }
+
+      if (messageType == "query") {
+        print('Here is the text along with the current context: $text');
+        // For queries, always search memory for a more comprehensive response
+        await _handleQuery(text, userId, currentContext);
       } else {
-        // Categorize the message as query or statement
-        final messageType = await openAIService.categorizeMessage(text);
-        print('Message categorized as: $messageType');
+        // For statements, simply respond normally with context
+        final response = await openAIService.getChatResponse(
+          "CONVERSATION CONTEXT:\n$currentContext\n\nUSER STATEMENT: $text",
+        );
 
-        if (messageType == "query") {
-          // For queries, determine if memory search is needed
-          final needsMemorySearch = await openAIService.requiresMemorySearch(
-            text,
-          );
-          print('Query needs memory search? $needsMemorySearch');
-
-          if (needsMemorySearch) {
-            // Full memory search flow for relevant queries
-            await _handleQuery(text, userId);
-          } else {
-            // Simple direct response for conversational queries
-            final response = await openAIService.getChatResponse(text);
-
-            // Add AI response to the chat
-            final aiMessage = ChatMessage(
-              message: response,
-              isUser: false,
-              timestamp: DateTime.now(),
-            );
-            messages.add(aiMessage);
-          }
-        } else {
-          // For statements, check if worth saving before asking
-          final isWorthSaving = await openAIService.isWorthSaving(text);
-          print('Statement worth saving? $isWorthSaving');
-
-          if (isWorthSaving) {
-            // Statement is valuable, ask for confirmation
-            pendingMemoryContent.value = text;
-            isAwaitingMemoryConfirmation.value = true;
-
-            final confirmationMessage = ChatMessage(
-              message:
-                  "This information seems valuable. Would you like me to remember it for future reference?",
-              isUser: false,
-              timestamp: DateTime.now(),
-            );
-            messages.add(confirmationMessage);
-          } else {
-            // Statement isn't valuable, just respond normally
-            final response = await openAIService.getChatResponse(text);
-
-            // Add AI response to the chat
-            final aiMessage = ChatMessage(
-              message: response,
-              isUser: false,
-              timestamp: DateTime.now(),
-            );
-            messages.add(aiMessage);
-          }
-        }
+        // Add AI response to the chat
+        final aiMessage = ChatMessage(
+          message: response,
+          isUser: false,
+          timestamp: DateTime.now(),
+        );
+        messages.add(aiMessage);
       }
     } catch (e) {
       print('Error processing message: $e');
@@ -182,71 +286,8 @@ class ChatController extends GetxController {
     return contextBuilder.toString();
   }
 
-  // Handle memory confirmation response
-  Future<void> _handleMemoryConfirmation(String response, String userId) async {
-    // Get the content we're potentially storing
-    final contentToStore = pendingMemoryContent.value;
-
-    // Reset confirmation state
-    isAwaitingMemoryConfirmation.value = false;
-    pendingMemoryContent.value = '';
-
-    // Use OpenAI to determine if response is positive
-    final isAffirmative = await openAIService.isPositiveResponse(response);
-    print(
-      'Confirmation response interpreted as: ${isAffirmative ? "positive" : "negative"}',
-    );
-
-    if (isAffirmative) {
-      // Get conversation context
-      final context = _getConversationContext();
-      print('Saving context to memory: $context');
-
-      // Add the memory with context
-      final result = await mem0Service.addMemory(userId, context);
-
-      String responseMessage;
-      if (result['success']) {
-        responseMessage =
-            "I've added that to my memory. I'll remember this conversation for future reference.";
-      } else {
-        responseMessage =
-            "I tried to save that to memory, but encountered an issue. Please try again later.";
-      }
-
-      // Add confirmation message
-      messages.add(
-        ChatMessage(
-          message: responseMessage,
-          isUser: false,
-          timestamp: DateTime.now(),
-        ),
-      );
-    } else {
-      // User declined saving to memory
-      messages.add(
-        ChatMessage(
-          message: "No problem. I won't remember that.",
-          isUser: false,
-          timestamp: DateTime.now(),
-        ),
-      );
-    }
-
-    // Always respond to the statement regardless of save decision
-    final aiResponse = await openAIService.getChatResponse(contentToStore);
-
-    // Add AI response to the chat
-    final aiMessage = ChatMessage(
-      message: aiResponse,
-      isUser: false,
-      timestamp: DateTime.now(),
-    );
-    messages.add(aiMessage);
-  }
-
   // Handle query flow (refactored from existing code)
-  Future<void> _handleQuery(String text, String userId) async {
+  Future<void> _handleQuery(String text, String userId, String context) async {
     relevantMemories.clear();
 
     // Search for relevant memories
@@ -261,24 +302,28 @@ class ChatController extends GetxController {
       print('Memory ${i + 1}: ${memories[i]}');
     }
 
-    // Prepare context with memories
-    String contextWithMemories = '';
-    if (relevantMemories.isNotEmpty) {
-      contextWithMemories = "Here's what I know from your documents:\n";
-      for (int i = 0; i < relevantMemories.length; i++) {
-        contextWithMemories += "- ${relevantMemories[i]}\n";
-      }
-      contextWithMemories +=
-          "\nPlease use this information to answer my question: $text";
+    // Always include both conversation context and document memory (if available)
+    String fullContext = "CONVERSATION CONTEXT:\n$context\n\n";
 
-      print('Using context with memories for response');
+    // Add document memories if found
+    if (relevantMemories.isNotEmpty) {
+      fullContext += "DOCUMENT INFORMATION:\n";
+      for (int i = 0; i < relevantMemories.length; i++) {
+        fullContext += "- ${relevantMemories[i]}\n";
+      }
+      print(
+        'Using both conversation context and document memories for response',
+      );
     } else {
-      contextWithMemories = text;
-      print('No relevant memories found, using original query');
+      print(
+        'No relevant document memories found, using conversation context only',
+      );
     }
 
-    // Get response from OpenAI with memory context
-    final response = await openAIService.getChatResponse(contextWithMemories);
+    fullContext += "\nUSER QUERY: $text";
+
+    // Get response from OpenAI with combined context
+    final response = await openAIService.getChatResponse(fullContext);
 
     // Add AI response to the chat
     final aiMessage = ChatMessage(
@@ -287,5 +332,28 @@ class ChatController extends GetxController {
       timestamp: DateTime.now(),
     );
     messages.add(aiMessage);
+  }
+
+  // Method to clear chat and start over with intro message
+  void clearChat() {
+    // Clear all messages and relevant memories
+    messages.clear();
+    relevantMemories.clear();
+
+    // Reset context management state
+    conversationSummary.value = '';
+    messageIndexAfterLastSummary.value = 0;
+
+    // Add initial greeting message
+    messages.add(
+      ChatMessage(
+        message:
+            "Hello! I'm your document assistant. How can I help you today?",
+        isUser: false,
+        timestamp: DateTime.now(),
+      ),
+    );
+
+    print('Chat cleared. Started new conversation.');
   }
 }
