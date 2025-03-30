@@ -68,6 +68,8 @@ class OpenAIService {
       );
       print('Using model: llama-3.1-8b-instant');
 
+      print('GROQ API key: $apiKey');
+
       final response = await http.post(
         Uri.parse(getApiUrl('chat/completions')),
         headers: {
