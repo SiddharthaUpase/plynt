@@ -39,7 +39,7 @@ void main() async {
   Get.put(AuthController(), permanent: true);
   Get.put(DocumentController(), permanent: true);
   // Pass the OpenAI API key to your chat controller
-  Get.put(ChatController(apiKey: apiOpenAIKey), permanent: true);
+  Get.put(ChatController(), permanent: true);
 
   runApp(const MyApp());
 }

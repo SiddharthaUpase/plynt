@@ -43,8 +43,9 @@ class DocumentController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    print('API Key: $apiKey');
     // Get the API key from ChatController
-    openAIService = OpenAIService(apiKey: apiKey);
+    openAIService = OpenAIService();
 
     //add a delay so that the user is fetched
     Future.delayed(const Duration(milliseconds: 600), () {
