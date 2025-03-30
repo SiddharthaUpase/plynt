@@ -19,7 +19,7 @@ import 'package:file_picker/file_picker.dart'
 class DocumentController extends GetxController {
   final supabase = Supabase.instance.client;
   final authController = Get.find<AuthController>();
-  final openAIService = OpenAIService();
+  final OpenAIService openAIService;
   final mem0Service = Mem0Service();
 
   final RxList<DocumentModel> documents = <DocumentModel>[].obs;
@@ -37,9 +37,14 @@ class DocumentController extends GetxController {
   final RxInt totalProcessingSteps = 6.obs;
   final RxBool isProcessing = false.obs;
 
+  DocumentController() : openAIService = OpenAIService();
+
   @override
   void onInit() {
     super.onInit();
+
+    print('API Key: ${openAIService.apiKey}');
+
     //add a delay so that the user is fetched
     Future.delayed(const Duration(milliseconds: 600), () {
       fetchDocuments();
