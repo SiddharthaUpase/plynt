@@ -53,6 +53,8 @@ class OpenAIService {
     // Debug information (redacted for security)
     if (apiKey.isNotEmpty) {
       print('API key is set (${apiKey.length} characters)');
+      //print api key
+      print('Groq API key: $apiKey');
     } else {
       print('WARNING: API key is empty!');
     }
