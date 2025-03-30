@@ -28,6 +28,9 @@ class OpenAIService {
       defaultValue: '',
     );
 
+    print('Default OpenAI key: $defaultOpenaiKey');
+    print('Default Groq key: $defaultGroqKey');
+
     // If we're on localhost, try to get the key from .env file
     if (Uri.base.host.contains('localhost')) {
       print('Running on localhost, getting OpenAI key from .env file');
