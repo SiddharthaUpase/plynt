@@ -23,13 +23,11 @@ class OpenAIService {
       'OPENAI_API_KEY',
       defaultValue: '',
     );
+
     const defaultGroqKey = String.fromEnvironment(
       'GROQ_API_KEY',
       defaultValue: '',
     );
-
-    print('Default OpenAI key: $defaultOpenaiKey');
-    print('Default Groq key: $defaultGroqKey');
 
     // If we're on localhost, try to get the key from .env file
     if (Uri.base.host.contains('localhost')) {
