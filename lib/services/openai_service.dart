@@ -29,18 +29,32 @@ class OpenAIService {
       defaultValue: '',
     );
 
-    // If we're on localhost, try to get the key from .env file
+    // Set the API key based on the service in use, regardless of environment
+    if (service_in_use == 'openai') {
+      apiKey = defaultOpenaiKey;
+    } else {
+      apiKey = defaultGroqKey;
+    }
+
+    // If we're on localhost, try to get the key from .env file (which might have more up-to-date keys)
     if (Uri.base.host.contains('localhost')) {
-      print('Running on localhost, getting OpenAI key from .env file');
+      print('Running on localhost, getting keys from .env file');
       if (service_in_use == 'openai') {
         print('Using OpenAI API key from .env file');
         final envKey = dotenv.env['OPENAI_API_KEY'] ?? '';
-        apiKey = envKey.isNotEmpty ? envKey : defaultOpenaiKey;
+        apiKey = envKey.isNotEmpty ? envKey : apiKey;
       } else {
         print('Using Groq API key from .env file');
         final envKey = dotenv.env['GROQ_API_KEY'] ?? '';
-        apiKey = envKey.isNotEmpty ? envKey : defaultGroqKey;
+        apiKey = envKey.isNotEmpty ? envKey : apiKey;
       }
+    }
+
+    // Debug information (redacted for security)
+    if (apiKey.isNotEmpty) {
+      print('API key is set (${apiKey.length} characters)');
+    } else {
+      print('WARNING: API key is empty!');
     }
 
     return apiKey;
