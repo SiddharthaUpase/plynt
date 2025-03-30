@@ -104,167 +104,193 @@ class _ChatSectionState extends State<ChatSection>
   Widget build(BuildContext context) {
     return Container(
       color: const Color(0xFF343541), // ChatGPT background color
-      child: Column(
+      child: Stack(
         children: [
-          // Chat messages area
-          Expanded(
-            child: Obx(() {
-              if (chatController.messages.isEmpty) {
-                return Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      // Plynt branding at the top
-                      Text(
-                        'plynt',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 32,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 1.2,
-                        ),
-                      ),
-                      const SizedBox(height: 36),
-                      // Main heading
-                      Text(
-                        "What can I help with?",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 24,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      // Custom input-like container
-                      Container(
-                        width: 600,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 16,
-                        ),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF40414F),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                'Ask anything',
-                                style: TextStyle(
-                                  color: Color(0xFF8E8EA0),
-                                  fontSize: 16,
-                                ),
-                              ),
+          Column(
+            children: [
+              // Chat messages area
+              Expanded(
+                child: Obx(() {
+                  if (chatController.messages.isEmpty) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                      child: Column(
+                        children: [
+                          // Add spacer to push content down
+                          const SizedBox(height: 80),
+                          // Plynt branding
+                          Text(
+                            'plynt',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 32,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 1.2,
                             ),
-                            Container(
-                              height: 36,
-                              width: 36,
-                              decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(18),
-                              ),
-                              child: Icon(
-                                Icons.mic,
-                                color: Colors.white,
-                                size: 20,
-                              ),
+                          ),
+                          const SizedBox(height: 36),
+                          // Main heading
+                          Text(
+                            "What can I help with?",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 24,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          const SizedBox(height: 100),
+                          // Flexible spacer to push content up from bottom
+                          Spacer(),
+                          // SizedBox at bottom to create space for floating input
+                          SizedBox(height: 120),
+                        ],
+                      ),
+                    );
+                  }
+
+                  return ListView.builder(
+                    controller: scrollController,
+                    padding: const EdgeInsets.only(
+                      left: 16,
+                      right: 16,
+                      top: 40, // Increased top padding
+                      bottom:
+                          100, // Add extra padding at bottom for the floating input
+                    ),
+                    itemCount:
+                        chatController.messages.length +
+                        (chatController.isTyping.value ? 1 : 0),
+                    itemBuilder: (context, index) {
+                      // Show typing indicator at the end if AI is typing
+                      if (chatController.isTyping.value &&
+                          index == chatController.messages.length) {
+                        return _buildTypingIndicator();
+                      }
+
+                      // Show messages
+                      final message = chatController.messages[index];
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 16),
+                        child: _buildChatBubble(
+                          message: message.message,
+                          isUser: message.isUser,
+                          time: message.timeString,
+                        ),
+                      );
+                    },
+                  );
+                }),
+              ),
+            ],
+          ),
+
+          // Floating message input area
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 30, // Position from bottom
+            child: Center(
+              child: Container(
+                width:
+                    MediaQuery.of(context).size.width * 0.7, // Wider input box
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12, // Slightly more padding
+                ),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF2D2D3A),
+                  borderRadius: BorderRadius.circular(25),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.3),
+                      blurRadius: 10,
+                      spreadRadius: 2,
+                      offset: const Offset(0, 5),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: textController,
+                        focusNode: _messageFocusNode,
+                        style: const TextStyle(color: Colors.white),
+                        maxLines: 1,
+                        textInputAction: TextInputAction.send,
+                        decoration: InputDecoration(
+                          hintText: 'Type a message...',
+                          hintStyle: const TextStyle(color: Color(0xFF8E8EA0)),
+                          filled: false,
+                          border: InputBorder.none,
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
+                        ),
+                        onSubmitted: (text) {
+                          _sendMessage();
+                          // Request focus back to the input field
+                          _messageFocusNode.requestFocus();
+                        },
+                      ),
+                    ),
+                    Container(
+                      height: 40,
+                      width: 40,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF10A37F), // ChatGPT green color
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: IconButton(
+                        icon: const Icon(
+                          Icons.send,
+                          color: Colors.white,
+                          size: 16,
+                        ),
+                        onPressed: _sendMessage,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+
+          // Clear chat floating button in top-right corner
+          Obx(
+            () =>
+                chatController.messages.length > 1
+                    ? Positioned(
+                      top: 16,
+                      right: 16,
+                      child: Container(
+                        height: 44,
+                        width: 44,
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(22),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.2),
+                              blurRadius: 5,
+                              offset: const Offset(0, 1),
                             ),
                           ],
                         ),
+                        child: IconButton(
+                          icon: const Icon(
+                            Icons.delete_outline,
+                            color: Colors.white,
+                            size: 20,
+                          ),
+                          tooltip: 'Clear chat',
+                          onPressed: _showClearChatConfirmation,
+                          padding: EdgeInsets.zero,
+                        ),
                       ),
-                      const SizedBox(height: 20),
-                    ],
-                  ),
-                );
-              }
-
-              return ListView.builder(
-                controller: scrollController,
-                padding: const EdgeInsets.all(16),
-                itemCount:
-                    chatController.messages.length +
-                    (chatController.isTyping.value ? 1 : 0),
-                itemBuilder: (context, index) {
-                  // Show typing indicator at the end if AI is typing
-                  if (chatController.isTyping.value &&
-                      index == chatController.messages.length) {
-                    return _buildTypingIndicator();
-                  }
-
-                  // Show messages
-                  final message = chatController.messages[index];
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 16),
-                    child: _buildChatBubble(
-                      message: message.message,
-                      isUser: message.isUser,
-                      time: message.timeString,
-                    ),
-                  );
-                },
-              );
-            }),
-          ),
-
-          // Message input area
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: const Color(0xFF2D2D3A),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.2),
-                  blurRadius: 5,
-                  offset: const Offset(0, -2),
-                ),
-              ],
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: textController,
-                    focusNode: _messageFocusNode,
-                    style: const TextStyle(color: Colors.white),
-                    maxLines: 1,
-                    textInputAction: TextInputAction.send,
-                    decoration: InputDecoration(
-                      hintText: 'Type a message...',
-                      hintStyle: const TextStyle(color: Color(0xFF8E8EA0)),
-                      filled: true,
-                      fillColor: const Color(0xFF40414F),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide.none,
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 14,
-                      ),
-                    ),
-                    onSubmitted: (text) {
-                      _sendMessage();
-                      // Request focus back to the input field
-                      _messageFocusNode.requestFocus();
-                    },
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Container(
-                  height: 48,
-                  width: 48,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF10A37F), // ChatGPT green color
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: IconButton(
-                    icon: const Icon(Icons.send, color: Colors.white, size: 20),
-                    onPressed: _sendMessage,
-                  ),
-                ),
-              ],
-            ),
+                    )
+                    : const SizedBox.shrink(),
           ),
         ],
       ),
@@ -332,50 +358,57 @@ class _ChatSectionState extends State<ChatSection>
     required bool isUser,
     required String time,
   }) {
-    return Row(
-      mainAxisAlignment:
-          isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (!isUser) ...[
-          _buildAvatar(isUser: false),
-          const SizedBox(width: 12),
-        ],
-        Flexible(
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            decoration: BoxDecoration(
-              color: isUser ? const Color(0xFF10A37F) : const Color(0xFF444654),
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 3,
-                  offset: const Offset(0, 1),
-                ),
-              ],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  message,
-                  style: const TextStyle(fontSize: 15, color: Colors.white),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  time,
-                  style: const TextStyle(
-                    fontSize: 10,
-                    color: Color(0xFFBBBBC0),
+    return Padding(
+      padding: EdgeInsets.only(top: 8, bottom: 8),
+      child: Row(
+        mainAxisAlignment:
+            isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (!isUser) ...[
+            _buildAvatar(isUser: false),
+            const SizedBox(width: 12),
+          ],
+          Flexible(
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              decoration: BoxDecoration(
+                color:
+                    isUser ? const Color(0xFF10A37F) : const Color(0xFF444654),
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 3,
+                    offset: const Offset(0, 1),
                   ),
-                ),
-              ],
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SelectableText(
+                    message,
+                    style: const TextStyle(fontSize: 15, color: Colors.white),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    time,
+                    style: const TextStyle(
+                      fontSize: 10,
+                      color: Color(0xFFBBBBC0),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
-        if (isUser) ...[const SizedBox(width: 12), _buildAvatar(isUser: true)],
-      ],
+          if (isUser) ...[
+            const SizedBox(width: 12),
+            _buildAvatar(isUser: true),
+          ],
+        ],
+      ),
     );
   }
 
@@ -401,6 +434,50 @@ class _ChatSectionState extends State<ChatSection>
           color: Colors.white,
         ),
       ),
+    );
+  }
+
+  void _showClearChatConfirmation() {
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            backgroundColor: const Color(0xFF343541),
+            title: const Text(
+              'Clear conversation',
+              style: TextStyle(color: Colors.white),
+            ),
+            content: const Text(
+              'Are you sure you want to clear this conversation? This action cannot be undone.',
+              style: TextStyle(color: Colors.white70),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text(
+                  'Cancel',
+                  style: TextStyle(color: Colors.white70),
+                ),
+              ),
+              TextButton(
+                onPressed: () {
+                  // Clear the chat and close the dialog
+                  chatController.clearChat();
+                  Navigator.of(context).pop();
+                },
+                style: TextButton.styleFrom(
+                  backgroundColor: const Color(0xFF10A37F),
+                ),
+                child: const Text(
+                  'Clear',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            ],
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
     );
   }
 }

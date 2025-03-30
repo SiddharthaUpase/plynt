@@ -32,26 +32,31 @@ class _SplashViewState extends State<SplashView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.deepPurple,
+      backgroundColor: const Color(0xFF202123), // Dark background like sidebar
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // App logo or icon
-            const Icon(Icons.lock, size: 80, color: Colors.white),
-            const SizedBox(height: 24),
-            // App name
-            const Text(
-              'Supabase Auth',
+            // App logo - just use text for now
+            Text(
+              'plynt',
               style: TextStyle(
-                fontSize: 28,
+                fontSize: 56,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
+                letterSpacing: 1.5,
               ),
             ),
-            const SizedBox(height: 48),
+            const SizedBox(height: 60),
             // Loading indicator
-            const CircularProgressIndicator(color: Colors.white),
+            SizedBox(
+              width: 40,
+              height: 40,
+              child: CircularProgressIndicator(
+                color: Colors.deepPurple.shade300,
+                strokeWidth: 3,
+              ),
+            ),
           ],
         ),
       ),
