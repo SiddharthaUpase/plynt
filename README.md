@@ -2,6 +2,8 @@
 
 A Flutter application demonstrating authentication with Supabase, following the MVC (Model-View-Controller) pattern and using GetX for state management and navigation.
 
+
+
 ## Features
 
 - Email/password authentication
