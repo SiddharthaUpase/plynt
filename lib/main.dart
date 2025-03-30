@@ -30,7 +30,6 @@ void main() async {
 
   String apiUrl = supabaseUrl;
   String apiKey = supabaseAnonKey;
-  String apiOpenAIKey = openaiApiKey;
 
   // Initialize Supabase
   await Supabase.initialize(url: apiUrl, anonKey: apiKey);

@@ -11,7 +11,6 @@ import '../services/openai_service.dart';
 import '../services/mem0_service.dart';
 import '../views/dialogs/keypoints_dialog.dart';
 import 'auth_controller.dart';
-import 'chat_controller.dart';
 
 // Conditionally import file_picker based on platform
 import 'package:file_picker/file_picker.dart'
@@ -20,7 +19,7 @@ import 'package:file_picker/file_picker.dart'
 class DocumentController extends GetxController {
   final supabase = Supabase.instance.client;
   final authController = Get.find<AuthController>();
-  late final OpenAIService openAIService;
+  final OpenAIService openAIService;
   final mem0Service = Mem0Service();
 
   final RxList<DocumentModel> documents = <DocumentModel>[].obs;
@@ -38,14 +37,13 @@ class DocumentController extends GetxController {
   final RxInt totalProcessingSteps = 6.obs;
   final RxBool isProcessing = false.obs;
 
-  var apiKey = String.fromEnvironment('OPENAI_API_KEY', defaultValue: '');
+  DocumentController() : openAIService = OpenAIService();
 
   @override
   void onInit() {
     super.onInit();
-    print('API Key: $apiKey');
-    // Get the API key from ChatController
-    openAIService = OpenAIService();
+
+    print('API Key: ${openAIService.apiKey}');
 
     //add a delay so that the user is fetched
     Future.delayed(const Duration(milliseconds: 600), () {
