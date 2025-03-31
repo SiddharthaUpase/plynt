@@ -339,16 +339,16 @@ class OpenAIService {
 
       try {
         // Check if file is too large for reliable processing
-        if (base64FileContent.length > 5000000) {
-          // ~5MB
-          print(
-            'File is too large for reliable processing: ${base64FileContent.length} bytes',
-          );
-          return {
-            'description': 'This file is too large for detailed analysis',
-            'tag': _getDefaultTag(fileName, fileType),
-          };
-        }
+        // if (base64FileContent.length > 5000000) {
+        //   // ~5MB
+        //   print(
+        //     'File is too large for reliable processing: ${base64FileContent.length} bytes',
+        //   );
+        //   return {
+        //     'description': 'This file is too large for detailed analysis',
+        //     'tag': _getDefaultTag(fileName, fileType),
+        //   };
+        // }
 
         // Create a prompt for OpenAI with file content - use OpenAI directly
         print('Sending request to OpenAI API with timeout...');
@@ -374,16 +374,18 @@ class OpenAIService {
                         {
                           'type': 'text',
                           'text':
-                              'Please analyze this document thoroughly and extract all important information. For each key piece of information, format it as a conversational statement (e.g., "The user\'s passport number is 1242" instead of "Passport number: 1242"). Return your analysis as JSON with "key_points" (array of conversational statements) and "tag" keys. The tag should be one of: travel, finance, education, health, personal, work, legal, receipts, housing.',
+                              'Please analyze this document thoroughly and extract ALL important information without omitting anything. Be comprehensive and detailed. For each key piece of information, format it as a conversational statement (e.g., "The user\'s passport number is 1242" instead of "Passport number: 1242"). There is NO LIMIT to how many key points you should extract - include everything meaningful from the document. Return your analysis as JSON with "key_points" (array of conversational statements) and "tag" keys. The tag should be one of: travel, finance, education, health, personal, work, legal, receipts, housing.',
                         },
                       ],
                     },
                   ],
                   'temperature': 0.3,
+                  'max_tokens':
+                      4000, // Explicitly set a higher token limit for the response
                 }),
               )
               .timeout(
-                const Duration(seconds: 60), // 60 second timeout
+                const Duration(seconds: 120), // 60 second timeout
                 onTimeout: () {
                   print('OpenAI API request timed out');
                   throw TimeoutException('OpenAI API request timed out');
