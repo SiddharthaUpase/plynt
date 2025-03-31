@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'dart:math' as math;
+import 'dart:async';
 
 class OpenAIService {
   // Get API key from environment variables - check platform environment variables first
@@ -305,10 +306,24 @@ class OpenAIService {
       );
 
       // Always use OpenAI for document processing, regardless of service_in_use setting
-      final String openaiApiKey =
-          service_in_use == 'openai'
-              ? apiKey
-              : dotenv.env['OPENAI_API_KEY'] ?? '';
+      String openaiApiKey;
+      if (service_in_use == 'openai') {
+        openaiApiKey = apiKey;
+      } else {
+        // Check for environment variables in a way that works in production
+        const defaultOpenAIKey = String.fromEnvironment(
+          'OPENAI_API_KEY',
+          defaultValue: '',
+        );
+
+        // In localhost, try to get from dotenv
+        if (Uri.base.host.contains('localhost')) {
+          final envKey = dotenv.env['OPENAI_API_KEY'] ?? '';
+          openaiApiKey = envKey.isNotEmpty ? envKey : defaultOpenAIKey;
+        } else {
+          openaiApiKey = defaultOpenAIKey;
+        }
+      }
 
       if (openaiApiKey.isEmpty) {
         print('OpenAI API key not found for document processing');
@@ -319,39 +334,71 @@ class OpenAIService {
       }
 
       print('Using OpenAI for document processing with model: gpt-4o');
-      print('OpenAI key available: ${openaiApiKey.isNotEmpty}');
+      print('OpenAI API key available: ${openaiApiKey.isNotEmpty}');
       print('Building request payload...');
 
       try {
+        // Check if file is too large for reliable processing
+        if (base64FileContent.length > 5000000) {
+          // ~5MB
+          print(
+            'File is too large for reliable processing: ${base64FileContent.length} bytes',
+          );
+          return {
+            'description': 'This file is too large for detailed analysis',
+            'tag': _getDefaultTag(fileName, fileType),
+          };
+        }
+
         // Create a prompt for OpenAI with file content - use OpenAI directly
-        print('Sending request to OpenAI API...');
-        final response = await http.post(
-          Uri.parse('https://api.openai.com/v1/chat/completions'),
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer $openaiApiKey',
-          },
-          body: jsonEncode({
-            'model': 'gpt-4o',
-            'messages': [
-              {
-                'role': 'user',
-                'content': [
-                  {
-                    'type': 'file',
-                    'file': {'filename': fileName, 'file_data': dataUrl},
-                  },
-                  {
-                    'type': 'text',
-                    'text':
-                        'Please analyze this document thoroughly and extract all important information. For each key piece of information, format it as a conversational statement (e.g., "The user\'s passport number is 1242" instead of "Passport number: 1242"). Return your analysis as JSON with "key_points" (array of conversational statements) and "tag" keys. The tag should be one of: travel, finance, education, health, personal, work, legal, receipts, housing.',
-                  },
-                ],
-              },
-            ],
-            'temperature': 0.3,
-          }),
-        );
+        print('Sending request to OpenAI API with timeout...');
+        http.Response response;
+        try {
+          response = await http
+              .post(
+                Uri.parse('https://api.openai.com/v1/chat/completions'),
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': 'Bearer $openaiApiKey',
+                },
+                body: jsonEncode({
+                  'model': 'gpt-4o',
+                  'messages': [
+                    {
+                      'role': 'user',
+                      'content': [
+                        {
+                          'type': 'file',
+                          'file': {'filename': fileName, 'file_data': dataUrl},
+                        },
+                        {
+                          'type': 'text',
+                          'text':
+                              'Please analyze this document thoroughly and extract all important information. For each key piece of information, format it as a conversational statement (e.g., "The user\'s passport number is 1242" instead of "Passport number: 1242"). Return your analysis as JSON with "key_points" (array of conversational statements) and "tag" keys. The tag should be one of: travel, finance, education, health, personal, work, legal, receipts, housing.',
+                        },
+                      ],
+                    },
+                  ],
+                  'temperature': 0.3,
+                }),
+              )
+              .timeout(
+                const Duration(seconds: 60), // 60 second timeout
+                onTimeout: () {
+                  print('OpenAI API request timed out');
+                  throw TimeoutException('OpenAI API request timed out');
+                },
+              );
+        } on TimeoutException {
+          print(
+            'Request timed out - likely due to large file or network issues',
+          );
+          return {
+            'description': 'Analysis timed out. Try a smaller file.',
+            'tag': _getDefaultTag(fileName, fileType),
+          };
+        }
+
         print(
           'Received response from OpenAI with status code: ${response.statusCode}',
         );
