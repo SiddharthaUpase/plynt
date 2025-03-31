@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'dart:math' as math;
 
 class OpenAIService {
   // Get API key from environment variables - check platform environment variables first
@@ -291,12 +292,17 @@ class OpenAIService {
   ) async {
     try {
       print('Sending file content to OpenAI: $fileName ($fileType)');
+      print('Base64 content length: ${base64FileContent.length} characters');
 
       // Determine the MIME type based on file extension
       String mimeType = _getMimeType(fileName);
+      print('MIME type determined: $mimeType');
 
       // Format base64 content as a data URL
       String dataUrl = 'data:$mimeType;base64,$base64FileContent';
+      print(
+        'Data URL created (first 50 chars): ${dataUrl.substring(0, math.min(50, dataUrl.length))}...',
+      );
 
       // Always use OpenAI for document processing, regardless of service_in_use setting
       final String openaiApiKey =
@@ -314,108 +320,148 @@ class OpenAIService {
 
       print('Using OpenAI for document processing with model: gpt-4o');
       print('OpenAI key available: ${openaiApiKey.isNotEmpty}');
+      print('Building request payload...');
 
-      // Create a prompt for OpenAI with file content - use OpenAI directly
-      final response = await http.post(
-        Uri.parse('https://api.openai.com/v1/chat/completions'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $openaiApiKey',
-        },
-        body: jsonEncode({
-          'model': 'gpt-4o',
-          'messages': [
-            {
-              'role': 'user',
-              'content': [
-                {
-                  'type': 'file',
-                  'file': {'filename': fileName, 'file_data': dataUrl},
-                },
-                {
-                  'type': 'text',
-                  'text':
-                      'Please analyze this document thoroughly and extract all important information. For each key piece of information, format it as a conversational statement (e.g., "The user\'s passport number is 1242" instead of "Passport number: 1242"). Return your analysis as JSON with "key_points" (array of conversational statements) and "tag" keys. The tag should be one of: travel, finance, education, health, personal, work, legal, receipts, housing.',
-                },
-              ],
-            },
-          ],
-          'temperature': 0.3,
-        }),
-      );
+      try {
+        // Create a prompt for OpenAI with file content - use OpenAI directly
+        print('Sending request to OpenAI API...');
+        final response = await http.post(
+          Uri.parse('https://api.openai.com/v1/chat/completions'),
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $openaiApiKey',
+          },
+          body: jsonEncode({
+            'model': 'gpt-4o',
+            'messages': [
+              {
+                'role': 'user',
+                'content': [
+                  {
+                    'type': 'file',
+                    'file': {'filename': fileName, 'file_data': dataUrl},
+                  },
+                  {
+                    'type': 'text',
+                    'text':
+                        'Please analyze this document thoroughly and extract all important information. For each key piece of information, format it as a conversational statement (e.g., "The user\'s passport number is 1242" instead of "Passport number: 1242"). Return your analysis as JSON with "key_points" (array of conversational statements) and "tag" keys. The tag should be one of: travel, finance, education, health, personal, work, legal, receipts, housing.',
+                  },
+                ],
+              },
+            ],
+            'temperature': 0.3,
+          }),
+        );
+        print(
+          'Received response from OpenAI with status code: ${response.statusCode}',
+        );
 
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        final aiResponse =
-            data['choices'][0]['message']['content'].toString().trim();
+        if (response.statusCode == 200) {
+          print('Successful response (200) from OpenAI');
+          final data = jsonDecode(response.body);
+          print('Response decoded successfully: ${data.keys}');
 
-        print('File Analysis Complete:');
-        print('--------------------------');
-        print(aiResponse);
-        print('--------------------------');
+          final aiResponse =
+              data['choices'][0]['message']['content'].toString().trim();
+          print(
+            'AI response extracted successfully, length: ${aiResponse.length}',
+          );
 
-        try {
-          // Remove any markdown code block markers if present
-          // Handle patterns like ```json { ... } ``` or ``` { ... } ```
-          String jsonString = aiResponse;
-          if (aiResponse.startsWith('```')) {
-            // Find the first { after the opening backticks
-            final openBraceIndex = aiResponse.indexOf('{');
-            if (openBraceIndex != -1) {
-              final closeBraceIndex = aiResponse.lastIndexOf('}');
-              if (closeBraceIndex != -1 && closeBraceIndex > openBraceIndex) {
-                jsonString = aiResponse.substring(
-                  openBraceIndex,
-                  closeBraceIndex + 1,
-                );
+          print('File Analysis Complete:');
+          print('--------------------------');
+          print(aiResponse);
+          print('--------------------------');
+
+          try {
+            print('Attempting to extract JSON from response...');
+            // Remove any markdown code block markers if present
+            // Handle patterns like ```json { ... } ``` or ``` { ... } ```
+            String jsonString = aiResponse;
+            if (aiResponse.startsWith('```')) {
+              print('Response starts with code block markers');
+              // Find the first { after the opening backticks
+              final openBraceIndex = aiResponse.indexOf('{');
+              if (openBraceIndex != -1) {
+                final closeBraceIndex = aiResponse.lastIndexOf('}');
+                if (closeBraceIndex != -1 && closeBraceIndex > openBraceIndex) {
+                  jsonString = aiResponse.substring(
+                    openBraceIndex,
+                    closeBraceIndex + 1,
+                  );
+                  print('Extracted JSON portion from markdown');
+                }
+              } else {
+                // If no opening brace, just remove the backticks
+                jsonString =
+                    aiResponse.replaceAll(RegExp(r'```.*?\n|\n```'), '').trim();
+                print('Removed code block markers');
               }
-            } else {
-              // If no opening brace, just remove the backticks
-              jsonString =
-                  aiResponse.replaceAll(RegExp(r'```.*?\n|\n```'), '').trim();
             }
+
+            // Try to parse as JSON
+            print(
+              'Attempting to parse JSON: ${jsonString.substring(0, math.min(100, jsonString.length))}...',
+            );
+            final jsonResult = jsonDecode(jsonString);
+            print('JSON parsed successfully');
+            print('JSON Result keys: ${jsonResult.keys.toList()}');
+
+            // Extract key points and tag
+            print('Extracting key points and tag...');
+            final List<String> keyPoints =
+                jsonResult['key_points'] != null
+                    ? List<String>.from(jsonResult['key_points'])
+                    : [];
+            print('Found ${keyPoints.length} key points');
+
+            final tag = (jsonResult['tag'] ?? '').toLowerCase();
+            print('Tag: $tag');
+
+            return {
+              'key_points': jsonEncode(
+                keyPoints,
+              ), // Convert list to JSON string
+              'description': jsonResult['description'] ?? '',
+              'tag': tag,
+            };
+          } catch (e) {
+            // Fallback if not valid JSON
+            print('Failed to parse JSON response: $e');
+            print('Error type: ${e.runtimeType}');
+            print('Error details: ${e.toString()}');
+
+            // Extract tag and description from text response
+            final String description =
+                aiResponse.length > 150
+                    ? '${aiResponse.substring(0, 147)}...'
+                    : aiResponse;
+
+            return {
+              'description': description,
+              'tag': _getDefaultTag(fileName, fileType),
+            };
           }
-
-          // Try to parse as JSON
-          final jsonResult = jsonDecode(jsonString);
-          print('JSON Result: $jsonResult');
-
-          // Extract key points and tag
-          final List<String> keyPoints =
-              jsonResult['key_points'] != null
-                  ? List<String>.from(jsonResult['key_points'])
-                  : [];
-          final tag = (jsonResult['tag'] ?? '').toLowerCase();
-
+        } else {
+          print('OpenAI API error status code: ${response.statusCode}');
+          print('Error response body: ${response.body}');
           return {
-            'key_points': jsonEncode(keyPoints), // Convert list to JSON string
-            'description': jsonResult['description'] ?? '',
-            'tag': tag,
-          };
-        } catch (e) {
-          // Fallback if not valid JSON
-          print('Failed to parse JSON response: $e');
-
-          // Extract tag and description from text response
-          final String description =
-              aiResponse.length > 150
-                  ? '${aiResponse.substring(0, 147)}...'
-                  : aiResponse;
-
-          return {
-            'description': description,
+            'description': 'No description available',
             'tag': _getDefaultTag(fileName, fileType),
           };
         }
-      } else {
-        print('OpenAI API error: ${response.body}');
+      } catch (e) {
+        print('Exception during OpenAI API request: $e');
+        print('Exception type: ${e.runtimeType}');
+        print('Exception details: ${e.toString()}');
         return {
-          'description': 'No description available',
+          'description': 'API request failed',
           'tag': _getDefaultTag(fileName, fileType),
         };
       }
     } catch (e) {
       print('Error generating document info: $e');
+      print('Error generating document info type: ${e.runtimeType}');
+      print('Error generating document info details: ${e.toString()}');
       return {
         'description': 'No description available',
         'tag': _getDefaultTag(fileName, fileType),

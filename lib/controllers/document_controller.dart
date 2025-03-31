@@ -197,15 +197,52 @@ class DocumentController extends GetxController {
       final base64FileContent = base64Encode(bytes);
 
       _updateProcessingStatus('Analyzing document content with AI...', 3);
-      // Generate document info using OpenAI
-      final documentInfo = await openAIService.generateDocumentInfo(
-        fileName,
-        fileType,
-        base64FileContent,
-      );
 
-      // Print the OpenAI response
-      print('OpenAI Response: $documentInfo');
+      // Generate document info using OpenAI
+      Map<String, dynamic> documentInfo;
+      bool analysisSucceeded = false;
+
+      try {
+        documentInfo = await openAIService.generateDocumentInfo(
+          fileName,
+          fileType,
+          base64FileContent,
+        );
+
+        // Print the OpenAI response
+        print('OpenAI Response: $documentInfo');
+
+        // Check if we received proper key_points in the response
+        if (documentInfo.containsKey('key_points')) {
+          analysisSucceeded = true;
+        } else {
+          print('Warning: AI analysis did not return key_points');
+        }
+      } catch (e) {
+        print('Error in AI document analysis: $e');
+        documentInfo = {
+          'description': 'Failed to analyze document: $e',
+          'tag': _getDefaultTag(fileName, fileType),
+        };
+
+        // Delete the uploaded file since analysis failed
+        try {
+          print('Deleting uploaded file due to analysis failure');
+          await supabase.storage.from('documents').remove([storagePath]);
+        } catch (deleteError) {
+          print('Error deleting file: $deleteError');
+        }
+
+        Get.snackbar(
+          'Analysis Failed',
+          'Could not process your document. Please try a different file.',
+          duration: const Duration(seconds: 5),
+        );
+
+        _resetProcessingStatus();
+        isUploading.value = false;
+        return;
+      }
 
       // Extract key points and show to user for confirmation
       List<String> keyPoints = [];
@@ -231,6 +268,13 @@ class DocumentController extends GetxController {
           print('User confirmed ${keyPoints.length} key points');
         } else {
           // User canceled
+          // Delete the uploaded file
+          try {
+            print('User canceled - removing uploaded file');
+            await supabase.storage.from('documents').remove([storagePath]);
+          } catch (deleteError) {
+            print('Error deleting file after user cancel: $deleteError');
+          }
           _resetProcessingStatus();
           isUploading.value = false;
           return;
@@ -308,33 +352,61 @@ class DocumentController extends GetxController {
           }
 
           print('Stored ${memoryResults.length} document-memory associations');
+        } else if (analysisSucceeded) {
+          // Even if no key points were found, save the document if analysis was successful
+          _updateProcessingStatus('Finalizing document upload...', 6);
+
+          // Generate tag using OpenAI
+          final tag =
+              documentInfo.containsKey('tag') && documentInfo['tag'] != null
+                  ? documentInfo['tag']
+                  : await openAIService.generateTagForDocument(
+                    fileName,
+                    fileType,
+                  );
+
+          // Insert document metadata into database
+          await supabase.from('documents').insert({
+            'name': fileName,
+            'file_url': fileUrl,
+            'file_type': fileType,
+            'tag': tag,
+            'user_id': user.id,
+            'created_at': DateTime.now().toIso8601String(),
+          });
+        } else {
+          // No key points and analysis wasn't successful, remove the file
+          print(
+            'No key points and analysis wasn\'t successful - removing uploaded file',
+          );
+          await supabase.storage.from('documents').remove([storagePath]);
+          Get.snackbar(
+            'Processing Failed',
+            'Could not extract information from your document.',
+            duration: const Duration(seconds: 5),
+          );
+          _resetProcessingStatus();
+          isUploading.value = false;
+          return;
         }
       } catch (e) {
         print('Error storing memories in Mem0: $e');
-      }
+        // Delete the uploaded file if there was an error
+        try {
+          print('Error in Mem0 storage - removing uploaded file');
+          await supabase.storage.from('documents').remove([storagePath]);
+        } catch (deleteError) {
+          print('Error deleting file: $deleteError');
+        }
 
-      // If no key points were processed, we still need to save the document
-      if (keyPoints.isEmpty) {
-        _updateProcessingStatus('Finalizing document upload...', 6);
-
-        // Generate tag using OpenAI
-        final tag =
-            documentInfo.containsKey('tag') && documentInfo['tag'] != null
-                ? documentInfo['tag']
-                : await openAIService.generateTagForDocument(
-                  fileName,
-                  fileType,
-                );
-
-        // Insert document metadata into database
-        await supabase.from('documents').insert({
-          'name': fileName,
-          'file_url': fileUrl,
-          'file_type': fileType,
-          'tag': tag,
-          'user_id': user.id,
-          'created_at': DateTime.now().toIso8601String(),
-        });
+        Get.snackbar(
+          'Storage Error',
+          'Could not store document information.',
+          duration: const Duration(seconds: 5),
+        );
+        _resetProcessingStatus();
+        isUploading.value = false;
+        return;
       }
 
       // Refresh the documents list
@@ -393,15 +465,52 @@ class DocumentController extends GetxController {
       final base64FileContent = base64Encode(fileBytes);
 
       _updateProcessingStatus('Analyzing document content with AI...', 3);
-      // Generate document info using OpenAI
-      final documentInfo = await openAIService.generateDocumentInfo(
-        fileName,
-        fileType,
-        base64FileContent,
-      );
 
-      // Print the OpenAI response
-      print('OpenAI Response: $documentInfo');
+      // Generate document info using OpenAI
+      Map<String, dynamic> documentInfo;
+      bool analysisSucceeded = false;
+
+      try {
+        documentInfo = await openAIService.generateDocumentInfo(
+          fileName,
+          fileType,
+          base64FileContent,
+        );
+
+        // Print the OpenAI response
+        print('OpenAI Response: $documentInfo');
+
+        // Check if we received proper key_points in the response
+        if (documentInfo.containsKey('key_points')) {
+          analysisSucceeded = true;
+        } else {
+          print('Warning: AI analysis did not return key_points');
+        }
+      } catch (e) {
+        print('Error in AI document analysis: $e');
+        documentInfo = {
+          'description': 'Failed to analyze document: $e',
+          'tag': _getDefaultTag(fileName, fileType),
+        };
+
+        // Delete the uploaded file since analysis failed
+        try {
+          print('Deleting uploaded file due to analysis failure');
+          await supabase.storage.from('documents').remove([storagePath]);
+        } catch (deleteError) {
+          print('Error deleting file: $deleteError');
+        }
+
+        Get.snackbar(
+          'Analysis Failed',
+          'Could not process your document. Please try a different file.',
+          duration: const Duration(seconds: 5),
+        );
+
+        _resetProcessingStatus();
+        isUploading.value = false;
+        return;
+      }
 
       // Extract key points and show to user for confirmation
       List<String> keyPoints = [];
@@ -427,6 +536,13 @@ class DocumentController extends GetxController {
           print('User confirmed ${keyPoints.length} key points');
         } else {
           // User canceled
+          // Delete the uploaded file
+          try {
+            print('User canceled - removing uploaded file');
+            await supabase.storage.from('documents').remove([storagePath]);
+          } catch (deleteError) {
+            print('Error deleting file after user cancel: $deleteError');
+          }
           _resetProcessingStatus();
           isUploading.value = false;
           return;
@@ -504,33 +620,61 @@ class DocumentController extends GetxController {
           }
 
           print('Stored ${memoryResults.length} document-memory associations');
+        } else if (analysisSucceeded) {
+          // Even if no key points were found, save the document if analysis was successful
+          _updateProcessingStatus('Finalizing document upload...', 6);
+
+          // Generate tag using OpenAI
+          final tag =
+              documentInfo.containsKey('tag') && documentInfo['tag'] != null
+                  ? documentInfo['tag']
+                  : await openAIService.generateTagForDocument(
+                    fileName,
+                    fileType,
+                  );
+
+          // Insert document metadata into database
+          await supabase.from('documents').insert({
+            'name': fileName,
+            'file_url': fileUrl,
+            'file_type': fileType,
+            'tag': tag,
+            'user_id': user.id,
+            'created_at': DateTime.now().toIso8601String(),
+          });
+        } else {
+          // No key points and analysis wasn't successful, remove the file
+          print(
+            'No key points and analysis wasn\'t successful - removing uploaded file',
+          );
+          await supabase.storage.from('documents').remove([storagePath]);
+          Get.snackbar(
+            'Processing Failed',
+            'Could not extract information from your document.',
+            duration: const Duration(seconds: 5),
+          );
+          _resetProcessingStatus();
+          isUploading.value = false;
+          return;
         }
       } catch (e) {
         print('Error storing memories in Mem0: $e');
-      }
+        // Delete the uploaded file if there was an error
+        try {
+          print('Error in Mem0 storage - removing uploaded file');
+          await supabase.storage.from('documents').remove([storagePath]);
+        } catch (deleteError) {
+          print('Error deleting file: $deleteError');
+        }
 
-      // If no key points were processed, we still need to save the document
-      if (keyPoints.isEmpty) {
-        _updateProcessingStatus('Finalizing document upload...', 6);
-
-        // Generate tag using OpenAI
-        final tag =
-            documentInfo.containsKey('tag') && documentInfo['tag'] != null
-                ? documentInfo['tag']
-                : await openAIService.generateTagForDocument(
-                  fileName,
-                  fileType,
-                );
-
-        // Insert document metadata into database
-        await supabase.from('documents').insert({
-          'name': fileName,
-          'file_url': fileUrl,
-          'file_type': fileType,
-          'tag': tag,
-          'user_id': user.id,
-          'created_at': DateTime.now().toIso8601String(),
-        });
+        Get.snackbar(
+          'Storage Error',
+          'Could not store document information.',
+          duration: const Duration(seconds: 5),
+        );
+        _resetProcessingStatus();
+        isUploading.value = false;
+        return;
       }
 
       // Refresh the documents list
@@ -761,6 +905,35 @@ class DocumentController extends GetxController {
     } catch (e) {
       print('Error updating document details: $e');
       throw e; // Rethrow to be caught in the UI layer
+    }
+  }
+
+  // Helper method to determine file type
+  String _getDefaultTag(String fileName, String fileType) {
+    fileName = fileName.toLowerCase();
+
+    if (fileName.contains('passport') ||
+        fileName.contains('visa') ||
+        fileName.contains('ticket')) {
+      return 'travel';
+    } else if (fileName.contains('invoice') ||
+        fileName.contains('receipt') ||
+        fileName.contains('bill')) {
+      return 'finance';
+    } else if (fileName.contains('certificate') ||
+        fileName.contains('diploma') ||
+        fileName.contains('course')) {
+      return 'education';
+    } else if (fileName.contains('medical') ||
+        fileName.contains('health') ||
+        fileName.contains('prescription')) {
+      return 'health';
+    } else if (fileName.contains('contract') ||
+        fileName.contains('agreement') ||
+        fileName.contains('legal')) {
+      return 'legal';
+    } else {
+      return 'personal';
     }
   }
 }
