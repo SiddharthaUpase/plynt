@@ -299,6 +299,10 @@ class OpenAIService {
       String mimeType = _getMimeType(fileName);
       print('MIME type determined: $mimeType');
 
+      // Check if the file is an image
+      bool isImage = mimeType.startsWith('image/');
+      print('File is an image: $isImage');
+
       // Format base64 content as a data URL
       String dataUrl = 'data:$mimeType;base64,$base64FileContent';
       print(
@@ -338,59 +342,93 @@ class OpenAIService {
       print('Building request payload...');
 
       try {
-        // Check if file is too large for reliable processing
-        // if (base64FileContent.length > 5000000) {
-        //   // ~5MB
-        //   print(
-        //     'File is too large for reliable processing: ${base64FileContent.length} bytes',
-        //   );
-        //   return {
-        //     'description': 'This file is too large for detailed analysis',
-        //     'tag': _getDefaultTag(fileName, fileType),
-        //   };
-        // }
-
         // Create a prompt for OpenAI with file content - use OpenAI directly
         print('Sending request to OpenAI API with timeout...');
         http.Response response;
         try {
-          response = await http
-              .post(
-                Uri.parse('https://api.openai.com/v1/chat/completions'),
-                headers: {
-                  'Content-Type': 'application/json',
-                  'Authorization': 'Bearer $openaiApiKey',
-                },
-                body: jsonEncode({
-                  'model': 'gpt-4o',
-                  'messages': [
-                    {
-                      'role': 'user',
-                      'content': [
-                        {
-                          'type': 'file',
-                          'file': {'filename': fileName, 'file_data': dataUrl},
-                        },
-                        {
-                          'type': 'text',
-                          'text':
-                              'Please analyze this document thoroughly and extract ALL important information without omitting anything. Be comprehensive and detailed. For each key piece of information, format it as a conversational statement (e.g., "The user\'s passport number is 1242" instead of "Passport number: 1242"). There is NO LIMIT to how many key points you should extract - include everything meaningful from the document. Return your analysis as JSON with "key_points" (array of conversational statements) and "tag" keys. The tag should be one of: travel, finance, education, health, personal, work, legal, receipts, housing.',
-                        },
-                      ],
-                    },
-                  ],
-                  'temperature': 0.3,
-                  'max_tokens':
-                      4000, // Explicitly set a higher token limit for the response
-                }),
-              )
-              .timeout(
-                const Duration(seconds: 120), // 60 second timeout
-                onTimeout: () {
-                  print('OpenAI API request timed out');
-                  throw TimeoutException('OpenAI API request timed out');
-                },
-              );
+          // Use different approach based on file type
+          if (isImage) {
+            // For images, use the Vision API with the image as base64
+            print('Using Vision API for image analysis');
+            response = await http
+                .post(
+                  Uri.parse('https://api.openai.com/v1/chat/completions'),
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer $openaiApiKey',
+                  },
+                  body: jsonEncode({
+                    'model': 'gpt-4o',
+                    'messages': [
+                      {
+                        'role': 'user',
+                        'content': [
+                          {
+                            'type': 'text',
+                            'text':
+                                'Please analyze this image thoroughly and extract ALL important information without omitting anything. Be comprehensive and detailed. For each key piece of information, format it as a conversational statement (e.g., "The user\'s passport number is 1242" instead of "Passport number: 1242"). There is NO LIMIT to how many key points you should extract - include everything meaningful from the image. Return your analysis as JSON with "key_points" (array of conversational statements) and "tag" keys. The tag should be one of: travel, finance, education, health, personal, work, legal, receipts, housing.',
+                          },
+                          {
+                            'type': 'image_url',
+                            'image_url': {'url': dataUrl},
+                          },
+                        ],
+                      },
+                    ],
+                    'temperature': 0.3,
+                    'max_tokens': 4000,
+                  }),
+                )
+                .timeout(
+                  const Duration(seconds: 120),
+                  onTimeout: () {
+                    print('OpenAI API request timed out');
+                    throw TimeoutException('OpenAI API request timed out');
+                  },
+                );
+          } else {
+            // For PDFs and other documents, use the File API
+            print('Using File API for document analysis');
+            response = await http
+                .post(
+                  Uri.parse('https://api.openai.com/v1/chat/completions'),
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer $openaiApiKey',
+                  },
+                  body: jsonEncode({
+                    'model': 'gpt-4o-mini',
+                    'messages': [
+                      {
+                        'role': 'user',
+                        'content': [
+                          {
+                            'type': 'file',
+                            'file': {
+                              'filename': fileName,
+                              'file_data': dataUrl,
+                            },
+                          },
+                          {
+                            'type': 'text',
+                            'text':
+                                'Please analyze this document thoroughly and extract ALL important information without omitting anything. Be comprehensive and detailed. For each key piece of information, format it as a conversational statement (e.g., "The user\'s passport number is 1242" instead of "Passport number: 1242"). There is NO LIMIT to how many key points you should extract - include everything meaningful from the document. Return your analysis as JSON with "key_points" (array of conversational statements) and "tag" keys. The tag should be one of: travel, finance, education, health, personal, work, legal, receipts, housing.',
+                          },
+                        ],
+                      },
+                    ],
+                    'temperature': 0.3,
+                    'max_tokens': 4000,
+                  }),
+                )
+                .timeout(
+                  const Duration(seconds: 120),
+                  onTimeout: () {
+                    print('OpenAI API request timed out');
+                    throw TimeoutException('OpenAI API request timed out');
+                  },
+                );
+          }
         } on TimeoutException {
           print(
             'Request timed out - likely due to large file or network issues',

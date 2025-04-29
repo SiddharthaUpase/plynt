@@ -114,7 +114,11 @@ class HomeView extends GetView<DocumentController> {
             children: [
               const Text(
                 'Processing Document',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
               ),
               const SizedBox(height: 24),
 
@@ -125,6 +129,7 @@ class HomeView extends GetView<DocumentController> {
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
+                    color: Colors.black,
                   ),
                   textAlign: TextAlign.center,
                 ),
